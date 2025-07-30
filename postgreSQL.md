@@ -201,7 +201,16 @@ CREATE DATABASE db_name;
 
 ## Listing databases
 
-To list the existing databases, we use `\l` command in psql.
+To list the existing databases, we use `list` or `\l` command in psql.
+
+To list the databases using a query, we can use the below code:
+
+```sql
+SELECT *
+FROM pg_catalog.pg_database;
+```
+
+That Postgres catalog contains a row for each database in the server.
 
 <hr>
 <hr>
