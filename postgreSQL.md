@@ -128,6 +128,10 @@
     - [Disabling and Enabling Triggers](#disabling-and-enabling-triggers)
     - [Dropping Triggers](#dropping-triggers)
     - [Event Triggers](#event-triggers)
+  - [Window functions](#window-functions)
+    - [`ROW_NUMBER()`](#row_number)
+    - [`RANK()`](#rank)
+    - [`DENSE_RANK()`](#dense_rank)
 
 <hr>
 
@@ -4057,3 +4061,94 @@ SELECT * FROM pg_event_trigger;
 
 <hr>
 <hr>
+
+## Window functions
+
+Here’s the basic syntax for a window function:
+
+```sql
+function_name (expression) OVER (
+    [PARTITION BY expression_list]
+    [ORDER BY expression_list]
+    [frame_clause]
+)
+```
+
+In this syntax:
+
+- function_name: The window function name such as `MAX`.
+- expression: The column or expression you want the window function to calculate.
+- `PARTITION BY`: This optional clause groups the rows into partitions where the window function applies.
+- `ORDER BY`: This clause defines the order of rows within each partition. Note that it differs from the `ORDER BY` clause in the `SELECT` statement.
+- frame_clause: This clause defines the subset of rows within the partition for the window function to consider.
+
+There are three kinds of window functions in PostgreSQL:
+
+- Ranking Window Functions
+  - `ROW_NUMBER`: Returns the number of the current row starting from 1.
+  - `RANK`: Returns the rank of the current row with gaps.
+  - `CUME_DIST`: Returns the cumulative distribution of a value in a set.
+  - `DENSE_RANK`: Returns the rank of the current row without gaps.
+  - `NTILE`: Divides rows within into into roughly equal-sized buckets and assigns a tile number to each row.
+  - `PERCENT_RANK`: Returns relative rank of each row in a set.
+- Value Window Functions
+  - `FIRST_VALUE`: Returns the value of the first row in each partition.
+  - `LAST_VALUE`: Returns the value of the last row in each partition.
+  - `LAG`: Returns a value from a subsequent row, helpful for forward-looking comparisons.
+  - `LEAD`: Returns a value from a preceding row, helpful for backward-looking comparisons.
+  - `NTH_VALUE`: Returns the value of the nth row within a window frame, helpful for accessing specific rows.
+- Aggregate Window Functions
+
+<hr>
+
+### `ROW_NUMBER()`
+
+```sql
+ROW_NUMBER() OVER (
+    [PARTITION BY expression_list]
+    [ORDER BY expression_list]
+)
+```
+
+Here is an example:
+
+```sql
+SELECT
+  product_name,
+  price,
+  ROW_NUMBER() OVER (ORDER BY  product_name) row_number
+FROM
+  products;
+```
+
+```sql
+SELECT
+  product_name,
+  price,
+  category_id,
+  ROW_NUMBER() OVER (
+    PARTITION BY category_id
+    ORDER BY product_name
+  ) row_number
+FROM
+  products;
+```
+
+<hr>
+
+### `RANK()`
+
+Here’s the syntax of the `RANK()` function:
+
+```sql
+RANK() OVER (
+    [PARTITION BY partition_expresion]
+    [ORDER BY sort_expression]
+)
+```
+
+Both `PARTITION BY` and `ORDER BY` clauses are optional. If you omit these clauses, the `RANK()` function will treat all the rows as peers and assign them the same rank (1). Therefore, the `RANK()` function works properly only when you have at least the `ORDER BY` clause.
+
+<hr>
+
+### `DENSE_RANK()`
