@@ -128,6 +128,8 @@
     - [Dropping Triggers](#dropping-triggers)
     - [Event Triggers](#event-triggers)
   - [Window functions](#window-functions)
+    - [Adding more data to pracice window functions](#adding-more-data-to-pracice-window-functions)
+    - [Intro](#intro)
     - [`ROW_NUMBER()`](#row_number)
     - [`RANK()`](#rank)
     - [`DENSE_RANK()`](#dense_rank)
@@ -4022,6 +4024,25 @@ SELECT * FROM pg_event_trigger;
 
 ## Window functions
 
+### Adding more data to pracice window functions
+
+```sql
+-- Add extra transactions to users so they have multiple rows
+INSERT INTO transactions (user_id, product_id, quantity, price)
+VALUES
+  (1, 3, 1, 250.00),  -- ziya
+  (1, 4, 2, 35.00),   -- ziya
+
+  (4, 3, 1, 250.00),  -- fatima
+  (4, 4, 1, 35.00),   -- fatima
+
+  (10, 3, 1, 250.00); -- emine
+```
+
+<hr>
+
+### Intro
+
 Here’s the basic syntax for a window function:
 
 ```sql
@@ -4060,6 +4081,8 @@ There are three kinds of window functions in PostgreSQL:
 <hr>
 
 ### `ROW_NUMBER()`
+
+Here is the syntax for the `ROW_NUMBER` window function:
 
 ```sql
 ROW_NUMBER() OVER (
