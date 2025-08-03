@@ -4150,6 +4150,22 @@ DENSE_RANK() OVER (
 )
 ```
 
+Here is an example:
+
+```sql
+SELECT
+	u.country,
+	u.username,
+	t.amount,
+	DENSE_RANK() OVER (
+		PARTITION BY u.country
+		ORDER BY t.amount DESC
+	) AS country_rank
+FROM users u
+JOIN transactions t ON u.user_id = t.user_id
+ORDER BY u.country, country_rank;
+```
+
 <hr>
 
 ### `PERCENT_RANK()`
