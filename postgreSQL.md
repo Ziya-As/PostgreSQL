@@ -132,6 +132,19 @@
     - [`ROW_NUMBER()`](#row_number)
     - [`RANK()`](#rank)
     - [`DENSE_RANK()`](#dense_rank)
+    - [`PERCENT_RANK()`](#percent_rank)
+    - [`NTILE`](#ntile)
+    - [`CUME_DIST`](#cume_dist)
+    - [`FIRST_VALUE`](#first_value)
+    - [`LAST_VALUE`](#last_value)
+    - [`LEAD()`](#lead)
+    - [`LAG()`](#lag)
+    - [`NTH_VALUE ()`](#nth_value-)
+    - [`MIN` Window Function](#min-window-function)
+    - [`MAX` Window Function](#max-window-function)
+    - [`AVG` Window Function](#avg-window-function)
+    - [`COUNT` Window Function](#count-window-function)
+    - [`SUM` Window Function](#sum-window-function)
 
 <hr>
 
@@ -4087,15 +4100,15 @@ There are three kinds of window functions in PostgreSQL:
 - Ranking Window Functions
   - `ROW_NUMBER`: Returns the number of the current row starting from 1.
   - `RANK`: Returns the rank of the current row with gaps.
-  - `CUME_DIST`: Returns the cumulative distribution of a value in a set.
   - `DENSE_RANK`: Returns the rank of the current row without gaps.
-  - `NTILE`: Divides rows within into into roughly equal-sized buckets and assigns a tile number to each row.
   - `PERCENT_RANK`: Returns relative rank of each row in a set.
+  - `NTILE`: Divides rows within into into roughly equal-sized buckets and assigns a tile number to each row.
+  - `CUME_DIST`: Returns the cumulative distribution of a value in a set.
 - Value Window Functions
   - `FIRST_VALUE`: Returns the value of the first row in each partition.
   - `LAST_VALUE`: Returns the value of the last row in each partition.
-  - `LAG`: Returns a value from a subsequent row, helpful for forward-looking comparisons.
   - `LEAD`: Returns a value from a preceding row, helpful for backward-looking comparisons.
+  - `LAG`: Returns a value from a subsequent row, helpful for forward-looking comparisons.
   - `NTH_VALUE`: Returns the value of the nth row within a window frame, helpful for accessing specific rows.
 - Aggregate Window Functions
 
@@ -4152,3 +4165,205 @@ Both `PARTITION BY` and `ORDER BY` clauses are optional. If you omit these claus
 <hr>
 
 ### `DENSE_RANK()`
+
+Here’s the syntax of the `DENSE_RANK()` function:
+
+```sql
+DENSE_RANK() OVER (
+    [PARTITION BY expression_list]
+    [ORDER BY expression_list]
+)
+```
+
+<hr>
+
+### `PERCENT_RANK()`
+
+Here’s the syntax of the `PERCENT_RANK()` function:
+
+```sql
+PERCENT_RANK() OVER (
+    [PARTITION BY expression_list]
+    [ORDER BY expression_list]
+)
+```
+
+<hr>
+
+### `NTILE`
+
+Here’s the syntax for the `NTILE()` function:
+
+```sql
+NTILE(num_tiles) OVER (
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+)
+```
+
+- `num_tiles`: The number of tiles or groups you want to divide the result set into.
+
+<hr>
+
+### `CUME_DIST`
+
+Here’s the syntax of the `CUME_DIST()` window function:
+
+```sql
+CUME_DIST() OVER (
+  [PARTITION BY partition_expression]
+  [ORDER BY sort_expression]
+)
+```
+
+<hr>
+
+### `FIRST_VALUE`
+
+Here’s the basic syntax of the `FIRST_VALUE` function:
+
+```sql
+FIRST_VALUE (expression) OVER (
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+)
+```
+
+<hr>
+
+### `LAST_VALUE`
+
+Here’s the basic syntax of the `LAST_VALUE` function:
+
+```sql
+LAST_VALUE (expression) OVER (
+     [PARTITION BY partition_expression]
+     [ORDER BY sort_expression]
+     [frame_clause]
+)
+```
+
+<hr>
+
+### `LEAD()`
+
+Here’s the basic syntax of the `LEAD()` window function:
+
+```sql
+LEAD(expression [,offset [,default]])
+OVER (
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+)
+```
+
+- `offset`: a positive integer that indicates the number of rows after the current row.
+- `default`: the value to return if the row at the offset from the current row does not exist. If you don’t provide a default and the row does not exist, the `LEAD()` function returns NULL.
+
+<hr>
+
+### `LAG()`
+
+Here’s the syntax of the PostgreSQL `LAG` window function:
+
+```sql
+LAG(value[, offset [, default]]) OVER (
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+)
+```
+
+- `offset`: Specifies the number of rows back from the current row you want to retrieve the value. The offset defaults to 1, which accesses the previous row’s value.
+- `default`: This is the default value if the previous row does not exist. If you don’t specify a default value, the function returns NULL if the current row is the first row in the partition, which has no previous row.
+
+<hr>
+
+### `NTH_VALUE ()`
+
+Here’s the syntax of the `NTH_VALUE()` window function:
+
+```sql
+NTH_VALUE(value, n) OVER (
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+    [frame_clause]
+)
+```
+
+`n`: Specifies the row number within the window frame from which the `NTH_VALUE` function retrieves the value. If the nth row does not exist, the `NTH_VALUE()` function returns NULL.
+
+<hr>
+
+### `MIN` Window Function
+
+The `MIN()` window function returns the minimum value in a set of values within a partition.
+
+Here’s the syntax of the `MIN()` window function:
+
+```sql
+MIN(value) OVER (
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+)
+```
+
+<hr>
+
+### `MAX` Window Function
+
+The `MAX()` window function returns the maximum value in a set of values within a partition.
+
+Here’s the syntax of the `MAX()` window function:
+
+```sql
+MAX(value) OVER (
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+)
+```
+
+<hr>
+
+### `AVG` Window Function
+
+The `AVG()` window function returns the average value in a set of values within a partition.
+
+Here’s the syntax of the `AVG()` window function:
+
+```sql
+AVG(value) OVER (
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+)
+```
+
+<hr>
+
+### `COUNT` Window Function
+
+The `COUNT()` window function returns the number of rows within a partition. Here’s the syntax of the `COUNT()` window function:
+
+```sql
+COUNT(value) OVER (
+   [PARTITION BY partition_expression]
+   [ORDER BY sort_expression]
+)
+```
+
+<hr>
+
+### `SUM` Window Function
+
+The `SUM()` window function returns the sum of values within a partition.
+
+Here’s the syntax of the `SUM()` window function:
+
+```sql
+SUM(value) OVER (
+    PARTITION BY partition_expression,
+    ORDER BY order_expression
+)
+```
+
+<hr>
+<hr>
