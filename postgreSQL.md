@@ -4095,24 +4095,15 @@ Here is an example:
 
 ```sql
 SELECT
-  product_name,
-  price,
-  ROW_NUMBER() OVER (ORDER BY  product_name) row_number
-FROM
-  products;
-```
-
-```sql
-SELECT
-  product_name,
-  price,
-  category_id,
-  ROW_NUMBER() OVER (
-    PARTITION BY category_id
-    ORDER BY product_name
-  ) row_number
-FROM
-  products;
+	u.username,
+	t.amount,
+	ROW_NUMBER() OVER (
+		PARTITION BY t.user_id
+		ORDER BY t.amount DESC
+	) as tx_rank
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id
+ORDER BY u.username, tx_rank;
 ```
 
 <hr>
