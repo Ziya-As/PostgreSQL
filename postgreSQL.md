@@ -4110,7 +4110,7 @@ ORDER BY u.username, tx_rank;
 
 ### `RANK()`
 
-Here’s the syntax of the `RANK()` function:
+Here’s the syntax of the `RANK()` window function:
 
 ```sql
 RANK() OVER (
@@ -4120,6 +4120,22 @@ RANK() OVER (
 ```
 
 Both `PARTITION BY` and `ORDER BY` clauses are optional. If you omit these clauses, the `RANK()` function will treat all the rows as peers and assign them the same rank (1). Therefore, the `RANK()` function works properly only when you have at least the `ORDER BY` clause.
+
+Here is an example:
+
+```sql
+SELECT
+	u.country,
+	u.username,
+	t.amount,
+	RANK() OVER (
+		PARTITION BY u.country
+		ORDER BY t.amount DESC
+	) AS country_rank
+FROM users u
+JOIN transactions t ON u.user_id = t.user_id
+ORDER BY u.country, country_rank;
+```
 
 <hr>
 
