@@ -4503,6 +4503,21 @@ AVG(value) OVER (
 )
 ```
 
+Here is an example:
+
+```sql
+SELECT
+	u.username,
+	t.amount,
+	t.created_at,
+	ROUND(
+		AVG(t.amount) OVER(
+			PARTITION BY t.user_id
+	), 2) AS avg_amount_for_user
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id;
+```
+
 <hr>
 
 ### `COUNT` Window Function
