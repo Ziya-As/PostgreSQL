@@ -4309,7 +4309,7 @@ JOIN transactions t ON u.user_id = t.user_id;
 
 ### `LAST_VALUE`
 
-Here’s the basic syntax of the `LAST_VALUE` function:
+Here’s the basic syntax of the `LAST_VALUE` window function:
 
 ```sql
 LAST_VALUE (expression) OVER (
@@ -4351,6 +4351,21 @@ OVER (
 
 - `offset`: a positive integer that indicates the number of rows after the current row.
 - `default`: the value to return if the row at the offset from the current row does not exist. If you don’t provide a default and the row does not exist, the `LEAD()` function returns NULL.
+
+Here is an example:
+
+```sql
+SELECT
+  u.username,
+  t.amount,
+  t.created_at,
+  LEAD(t.amount) OVER (
+    PARTITION BY u.user_id
+	ORDER BY t.created_at
+  ) AS next_amount
+FROM users u
+JOIN transactions t ON u.user_id = t.user_id;
+```
 
 <hr>
 
