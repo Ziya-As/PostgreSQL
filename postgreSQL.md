@@ -4199,7 +4199,7 @@ ORDER BY u.country, country_rank;
 
 ### `NTILE`
 
-Here’s the syntax for the `NTILE()` function:
+Here’s the syntax for the `NTILE()` window function:
 
 ```sql
 NTILE(num_tiles) OVER (
@@ -4209,6 +4209,21 @@ NTILE(num_tiles) OVER (
 ```
 
 - `num_tiles`: The number of tiles or groups you want to divide the result set into.
+
+Here is an example:
+
+```sql
+SELECT
+  u.country,
+  u.username,
+  t.amount,
+  NTILE(3) OVER (
+  	PARTITION BY u.country
+    ORDER BY t.amount DESC
+  ) AS quartile
+FROM users u
+JOIN transactions t ON u.user_id = t.user_id;
+```
 
 <hr>
 
@@ -4223,11 +4238,26 @@ CUME_DIST() OVER (
 )
 ```
 
+Here is an example:
+
+```sql
+SELECT
+  u.country,
+  u.username,
+  t.amount,
+  CUME_DIST() OVER (
+    PARTITION BY u.country
+    ORDER BY t.amount
+  ) AS cume_distribution
+FROM users u
+JOIN transactions t ON u.user_id = t.user_id;
+```
+
 <hr>
 
 ### `FIRST_VALUE`
 
-Here’s the basic syntax of the `FIRST_VALUE` function:
+Here’s the basic syntax of the `FIRST_VALUE` window function:
 
 ```sql
 FIRST_VALUE (expression) OVER (
@@ -4235,6 +4265,8 @@ FIRST_VALUE (expression) OVER (
     [ORDER BY sort_expression]
 )
 ```
+
+Here is an example:
 
 <hr>
 
