@@ -4474,6 +4474,20 @@ MAX(value) OVER (
 )
 ```
 
+Here is an example:
+
+```sql
+SELECT
+	u.username,
+	t.amount,
+	t.created_at,
+	MAX(t.amount) OVER(
+		PARTITION BY t.user_id
+	) AS max_amount_for_user
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id;
+```
+
 <hr>
 
 ### `AVG` Window Function
