@@ -4070,7 +4070,10 @@ The optional `frame_clause` can be one of
 { RANGE | ROWS | GROUPS } BETWEEN frame_start AND frame_end [ frame_exclusion ]
 ```
 
-where `frame_start` and `frame_end` can be one of
+- `ROWS`: This mode allows you to define the frame in terms of physical rows. When you specify ROWS, you're telling PostgreSQL to count the exact number of rows from the current row to determine the frame. This mode is ideal when you need a fixed number of rows for your calculation, such as when calculating moving averages or running totals that span a specific row count.
+- `RANGE`: Unlike `ROWS`, the `RANGE` mode focuses on the values of the ordering column(s) to define the frame. It groups rows that have the same values as the current row in the ordering column(s), effectively treating rows with identical values as a single entity in the calculation. `RANGE` is particularly useful for dealing with duplicate values in the dataset.
+
+The `frame_start` and `frame_end` can be one of:
 
 ```sql
 UNBOUNDED PRECEDING
@@ -4079,6 +4082,8 @@ CURRENT ROW
 offset FOLLOWING
 UNBOUNDED FOLLOWING
 ```
+
+Whenever we use a window function, it creates a 'window' or a 'partition' depending upon the column mentioned after the `partition by` clause in the `over` clause. And then it applies that window function to each of those partitions and inside these partitions, we can create a subset of records using the `frame_clause`. Therefore, the `frame_clause` specifies a subset. A `frame_start` of `UNBOUNDED PRECEDING` means that the frame starts with the first row of the partition, and similarly a `frame_end` of `UNBOUNDED FOLLOWING` means that the frame ends with the last row of the partition. There is a default frame that SQL uses with every window function. The default frame is a `range between unbounded preceding and current row`.
 
 There are three kinds of window functions in PostgreSQL:
 
@@ -4312,6 +4317,22 @@ LAST_VALUE (expression) OVER (
      [ORDER BY sort_expression]
      [frame_clause]
 )
+```
+
+Here is an example:
+
+```sql
+SELECT
+  u.username,
+  t.amount,
+  t.created_at,
+  LAST_VALUE(t.amount) OVER (
+    PARTITION BY u.user_id
+    ORDER BY t.created_at DESC
+	ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+  ) AS last_transaction_amount
+FROM users u
+JOIN transactions t ON u.user_id = t.user_id;
 ```
 
 <hr>
