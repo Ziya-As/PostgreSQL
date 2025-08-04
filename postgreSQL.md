@@ -4414,6 +4414,22 @@ NTH_VALUE(value, n) OVER (
 
 `n`: Specifies the row number within the window frame from which the `NTH_VALUE` function retrieves the value. If the nth row does not exist, the `NTH_VALUE()` function returns NULL.
 
+Here is an example:
+
+```sql
+SELECT
+	u.username,
+	t.amount,
+	t.created_at,
+	NTH_VALUE(t.amount, 2) OVER (
+		PARTITION BY u.user_id
+		ORDER BY t.created_at
+		ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+	) AS second_amount
+FROM transactions t
+JOIN users u ON u.user_id = t.user_id;
+```
+
 <hr>
 
 ### `MIN` Window Function
