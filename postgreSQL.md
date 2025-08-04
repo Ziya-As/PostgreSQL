@@ -4560,5 +4560,19 @@ SUM(value) OVER (
 )
 ```
 
+Here is an example:
+
+```sql
+SELECT
+	u.username,
+	t.amount,
+	t.created_at,
+	SUM(t.amount) OVER (
+	    PARTITION BY t.user_id
+	) AS total_spent_by_user
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id;
+```
+
 <hr>
 <hr>
