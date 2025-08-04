@@ -4268,6 +4268,19 @@ FIRST_VALUE (expression) OVER (
 
 Here is an example:
 
+```sql
+SELECT
+  u.username,
+  t.amount,
+  t.created_at,
+  FIRST_VALUE(t.amount) OVER (
+    PARTITION BY u.user_id
+    ORDER BY t.created_at
+  ) AS first_transaction_amount
+FROM users u
+JOIN transactions t ON u.user_id = t.user_id;
+```
+
 <hr>
 
 ### `LAST_VALUE`
