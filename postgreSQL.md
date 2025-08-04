@@ -4531,6 +4531,20 @@ COUNT(value) OVER (
 )
 ```
 
+Here is an example:
+
+```sql
+SELECT
+	u.username,
+	t.amount,
+	t.created_at,
+	COUNT(*) OVER(
+		PARTITION BY t.user_id
+	) AS user_transaction_count
+FROM transactions t
+JOIN users u ON t.user_id = u.user_id;
+```
+
 <hr>
 
 ### `SUM` Window Function
