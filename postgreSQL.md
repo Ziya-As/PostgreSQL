@@ -4383,6 +4383,21 @@ LAG(value[, offset [, default]]) OVER (
 - `offset`: Specifies the number of rows back from the current row you want to retrieve the value. The offset defaults to 1, which accesses the previous row’s value.
 - `default`: This is the default value if the previous row does not exist. If you don’t specify a default value, the function returns NULL if the current row is the first row in the partition, which has no previous row.
 
+Here is an example:
+
+```sql
+SELECT
+  u.username,
+  t.amount,
+  t.created_at,
+  lag(t.amount) OVER (
+    PARTITION BY u.user_id
+	ORDER BY t.created_at
+  ) AS prev_transaction_amount
+FROM users u
+JOIN transactions t ON u.user_id = t.user_id;
+```
+
 <hr>
 
 ### `NTH_VALUE ()`
