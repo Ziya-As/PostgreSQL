@@ -4043,6 +4043,8 @@ VALUES
 
 ### Intro
 
+A window function call represents the application of an aggregate-like function over some portion of the rows selected by a query. Unlike non-window aggregate calls, this is not tied to grouping of the selected rows into a single output row — each row remains separate in the query output. However the window function has access to all the rows that would be part of the current row's group according to the grouping specification (`PARTITION BY` list) of the window function call.
+
 Here’s the basic syntax for a window function:
 
 ```sql
@@ -4055,11 +4057,28 @@ function_name (expression) OVER (
 
 In this syntax:
 
-- function_name: The window function name such as `MAX`.
-- expression: The column or expression you want the window function to calculate.
+- `function_name`: The window function name such as `MAX`.
+- `expression`: The column or expression you want the window function to calculate.
 - `PARTITION BY`: This optional clause groups the rows into partitions where the window function applies.
 - `ORDER BY`: This clause defines the order of rows within each partition. Note that it differs from the `ORDER BY` clause in the `SELECT` statement.
-- frame_clause: This clause defines the subset of rows within the partition for the window function to consider.
+- `frame_clause`: This clause defines the subset of rows within the partition for the window function to consider.
+
+The optional `frame_clause` can be one of
+
+```sql
+{ RANGE | ROWS | GROUPS } frame_start [ frame_exclusion ]
+{ RANGE | ROWS | GROUPS } BETWEEN frame_start AND frame_end [ frame_exclusion ]
+```
+
+where `frame_start` and `frame_end` can be one of
+
+```sql
+UNBOUNDED PRECEDING
+offset PRECEDING
+CURRENT ROW
+offset FOLLOWING
+UNBOUNDED FOLLOWING
+```
 
 There are three kinds of window functions in PostgreSQL:
 
