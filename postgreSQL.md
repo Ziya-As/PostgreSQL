@@ -2,12 +2,12 @@
 
 - [postgreSQL](#postgresql)
   - [Some Useful Links](#some-useful-links)
-  - [Creating a database](#creating-a-database)
   - [Listing databases](#listing-databases)
+  - [Creating a database](#creating-a-database)
   - [Deleting a database](#deleting-a-database)
+  - [Listing tables](#listing-tables)
   - [Creating a table](#creating-a-table)
     - [Generated columns](#generated-columns)
-  - [Listing tables](#listing-tables)
   - [Deleting a table](#deleting-a-table)
   - [Data Types](#data-types)
     - [`BOOLEAN`](#boolean)
@@ -160,17 +160,6 @@
 <hr>
 <hr>
 
-## Creating a database
-
-To create a database in postgreSQL, we use:
-
-```sql
-CREATE DATABASE db_name;
-```
-
-<hr>
-<hr>
-
 ## Listing databases
 
 To list the existing databases, we use `list` or `\l` command in psql.
@@ -187,12 +176,48 @@ That Postgres catalog contains a row for each database in the server.
 <hr>
 <hr>
 
+## Creating a database
+
+To create a database in postgreSQL, we use:
+
+```sql
+CREATE DATABASE db_name;
+```
+
+<hr>
+<hr>
+
 ## Deleting a database
 
 To delete a database, we use:
 
 ```sql
 DROP DATABASE test;
+```
+
+<hr>
+<hr>
+
+## Listing tables
+
+To list the existing tables, we use the `\d` command in psql.
+
+Note that if we have sequences (auto incremented columns), `\d` will also show them. In case we have sequences, but want to see the list of tables, we can use the `\dt` command.
+
+To list the tables in PGAdmin tool, we can use the below command:
+
+```sql
+SELECT tablename FROM pg_tables WHERE schemaname = 'public';
+```
+
+To describe the actual table, we use the `\d table_name` command in psql.
+
+In PGAdmin tool, we can use the below command to get the details about a table:
+
+```sql
+SELECT *
+FROM information_schema.COLUMNS
+WHERE TABLE_NAME = 'table_name';
 ```
 
 <hr>
@@ -225,41 +250,15 @@ To create a generated column, use the `GENERATED ALWAYS AS` clause in `CREATE TA
 
 ```sql
 CREATE TABLE transactions (
-  ...
   quantity INT NOT NULL CHECK (quantity > 0),
   price DECIMAL(8, 2) NOT NULL CHECK (price >= 0),
-  amount DECIMAL(10, 2) GENERATED ALWAYS AS (quantity * price) STORED,
+  amount DECIMAL(10, 2) GENERATED ALWAYS AS (quantity * price) STORED
 );
 ```
 
 The keyword `STORED` must be specified to choose the stored kind of generated column.
 
 A generated column cannot be written to directly. In `INSERT` or `UPDATE` commands, a value cannot be specified for a generated column, but the keyword `DEFAULT` may be specified.
-
-<hr>
-<hr>
-
-## Listing tables
-
-To list the existing tables, we use the `\d` command in psql.
-
-Note that if you have sequences (auto incremented columns), `\d` will also show them. In case you have sequences, but want to see the list of tables, we can use the `\dt` command.
-
-To list the tables in PGAdmin tool, we can use the below command:
-
-```sql
-SELECT tablename FROM pg_tables WHERE schemaname = 'public';
-```
-
-To describe the actual table, we use the `\d table_name` command in psql.
-
-In PGAdmin tool, we can use the below command to get the details about a table:
-
-```sql
-SELECT *
-FROM information_schema.COLUMNS
-WHERE TABLE_NAME = 'table_name';
-```
 
 <hr>
 <hr>
@@ -279,6 +278,12 @@ DROP TABLE IF EXISTS table_name;
 ```
 
 The `DROP TABLE` statement can drop multiple tables at once.
+
+If a table is referenced by another table, then PostgreSQL might raise an error while deleting the table. To delete the table, together with the columns referring to it, we use the `CASCADE` OPTION:
+
+```sql
+DROP TABLE IF EXISTS table_name CASCADE;
+```
 
 <hr>
 <hr>
@@ -421,7 +426,7 @@ In this syntax:
 
 For example, a `DEC(11,2)` column can store a number with 11 digits, including two digits after the decimal point.
 
-If you omit the scale, it will default to zero: `DEC(p)`. It is equivalent to: `DEC(p,0)`.
+If you omit the scale, it will default to zero: `DEC(p)` is equivalent to `DEC(p,0)`.
 
 However, the precision and scale will default to their above limits if you ignore both precision and scale: `DEC`.
 
@@ -486,21 +491,19 @@ While retrieving the data with the `DATE` type, we can format it using the `to_c
 
 ```sql
 SELECT
-  product_name,
-  quantity,
-  adjustment_date,
-  to_char (adjustment_date, 'Month dd, yyyy') formatted_date
+  username,
+  to_char (signup_date, 'Month dd, yyyy') formatted_date
 FROM
-  stock_adjustments
+  users
 ORDER BY
-  adjustment_date;
+  signup_date;
 ```
 
 <hr>
 
 ### `TIME`
 
-We use the `TIME` data type to store time data (without date) in tables. A time column can store a time value from 00:00:00 to 24:00:00. PostgreSQL uses 8-byte to store a time value. PostgreSQL allows you to store time with fractional seconds precision, up to 6 digits. To use a time value with fractional seconds precision, you use the following format: HH:MI:SS.pppppp. PostgreSQL accepts various time formats, giving you flexibility. However, it is recommended to use ISO 8601, which is HH:MM:SS for time input.
+We use the `TIME` data type to store time data (without date) in tables. A time column can store a time value from 00:00:00 to 24:00:00. PostgreSQL uses 8-byte to store a time value. PostgreSQL allows you to store time with fractional seconds precision, up to 6 digits. To use a time value with fractional seconds precision, you use the following format: HH:MM:SS.pppppp. PostgreSQL accepts various time formats, giving you flexibility. However, it is recommended to use ISO 8601, which is HH:MM:SS for time input.
 
 Here is the syntax:
 
@@ -595,25 +598,25 @@ When you retrieve a timestamp from a `TIMESTAMPTZ` column, PostgreSQL converts t
 You can set the time zone of your database session using the `SET TIME ZONE` statement. For example:
 
 ```sql
-SET TIME ZONE 'America/New_York';
+SET TIME ZONE 'America/Vancouver';
+```
+
+To see the time zone in the database server, we can use this command:
+
+```sql
+SHOW TIME ZONE;
+```
+
+To get a list of supported time zone names, you use the following statement:
+
+```sql
+SELECT * FROM pg_timezone_names;
 ```
 
 The `CURRENT_TIMESTAMP` function returns the current time with a time zone.
 
 ```sql
 SELECT CURRENT_TIMESTAMP;
-```
-
-To get a list of supported time zone names, you use the following statement:
-
-```sql
-SELECT
-  name,
-  abbrev,
-  utc_offset,
-  is_dst
-FROM
-  pg_timezone_names;
 ```
 
 <hr>
@@ -707,7 +710,9 @@ CREATE TABLE table_name(
 
 ### `NOT NULL`
 
-NULL represents the absence of a value, indicating that the data is unknown or missing. If you compare NULL with any value, the comparison returns NULL. Even NULL is not equal to NULL; comparing NULL with NULL also results in NULL.
+NULL represents the absence of a value, indicating that the data is unknown or missing.
+
+If you compare NULL with any value, the comparison returns NULL. Even NULL is not equal to NULL; comparing NULL with NULL also results in NULL.
 
 When you define a column for a table, that column is nullable. It means that you can insert NULL into the column. If we want a column to not have a null value (not be empty), we can use the `NOT NULL` constraint:
 
@@ -747,7 +752,7 @@ CREATE TABLE users (
 );
 ```
 
-When you insert a row without providing a value for column1, PostgreSQL will use the default value for insertion. You can also use the `DEFAULT` keyword to conveniently represent the default value while inserting data:
+When you insert a row without providing a value for `is_active`, PostgreSQL will use the default value for insertion. You can also use the `DEFAULT` keyword to conveniently represent the default value while inserting data:
 
 ```sql
 INSERT INTO
@@ -801,7 +806,7 @@ You use `ALTER TABLE ... ADD CONSTRAINT` statement to add a `CHECK` constraint t
 ```sql
 ALTER TABLE table_name
 ADD CONSTRAINT constraint_name
-CHECK (discounted_price < price AND discounted_price > 0);
+CHECK (account_balance >=0 AND account_balance <= 1000000);
 ```
 
 We can define the `CHECK` constraint as a table constraint. When you add it as a table constraint, it is written after all columns and can involve one or more columns.
