@@ -1033,7 +1033,6 @@ CREATE TABLE users (
   account_balance DECIMAL(10, 2) CHECK (account_balance >= 0)
 );
 
-
 -- user_activity table
 CREATE TABLE user_activity (
   activity_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -1066,13 +1065,13 @@ INSERT INTO users (
   true,
   '2025-02-15',
   NULL,
-  750.25),
-;
+  750.25
+);
 ```
 
 Note that the order of columns listed after the table name does not matter. You can change the column order as you like. But you also need to change the order of values so that they match the columns.
 
-PostgreSQL allows you to insert multiple rows into a table at once. We just to have more `VALUES()` commands.
+PostgreSQL allows you to insert multiple rows into a table at once. We just need to have more `VALUES()` commands.
 
 To return the inserted row, you add the `RETURNING` clause to the insert statement:
 
@@ -1197,11 +1196,15 @@ SELECT username, country FROM users ORDER BY country
 
 Use `ASC` to sort rows in ascending order and `DESC` to sort rows in descending order. The `ORDER BY` clause uses the `ASC` by default if you don’t explicitly specify it.
 
+```sql
+SELECT username, country FROM users ORDER BY country DESC
+```
+
 When it comes to NULL, PostgreSQL provides two options in the `ORDER BY` clause:
 
 ```sql
-SELECT username, country FROM users ORDER BY country DESC NULLS LAST;
 SELECT username, country FROM users ORDER BY country NULLS FIRST;
+SELECT username, country FROM users ORDER BY country NULLS LAST;
 ```
 
 If you have column aliases in the `SELECT` clause, you can use them in the `ORDER BY` clause. The reason is that PostgreSQL evaluates the `SELECT` clause before the `ORDER BY` clause.
@@ -1210,7 +1213,7 @@ If you have column aliases in the `SELECT` clause, you can use them in the `ORDE
 SELECT username, country as c FROM users ORDER BY c;
 ```
 
-Instead of using the column name or an alias, we can also refer to a column by a number in `ORDER BY`. For example, in the below code, we refer to the `country` column as `2`, as its the second used column in the `SELECT` statement:
+Instead of using the column name or an alias, we can also refer to a column by a number in `ORDER BY`. For example, in the below code, we refer to the `country` column as `2`, as its the second column in the `SELECT` statement:
 
 ```sql
 SELECT username, country FROM users ORDER BY 2;
