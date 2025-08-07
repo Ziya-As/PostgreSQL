@@ -1253,8 +1253,7 @@ FROM table_name
 ORDER BY column1, column2, column3;
 ```
 
-- First, specify a column (column1) inside the parentheses of the `ON` keyword. The `ON` keyword will group rows in the table_name by the values in the column1 into distinct groups. The `SELECT` clause may include other columns (column2, column3) or expressions.
-- Second, provide the column defined in the `ON` clause as the first column in the `ORDER BY` clause. The `ORDER BY` clause sorts rows in each distinct group by column1 and keeps the first row only.
+This is how it works: We specify a column (column1) inside the parentheses of the `ON` keyword. The column1 will be used to apply the `DISTINCT` clause on. The `SELECT` clause may include other columns (column2, column3) or expressions. The `DISTINCT` clause won't be applied on them. The `ORDER BY` clause sorts rows in each distinct group by column1 and keeps the first row only (only the first row from the other columns get retrieved).
 
 ```sql
 SELECT DISTINCT ON (country) country, is_active FROM users ORDER BY country;
@@ -1271,10 +1270,14 @@ SELECT DISTINCT country, is_active FROM users ORDER BY country;
 To assign a meaningful column name to a calculated column (or a regular column), you can use a column alias. A column alias is a temporary column name that you assign to the column in the `SELECT` statement. We can set an alias for a column name using the `AS` keyword:
 
 ```sql
-SELECT product_id, quantity, price, (quantity * price) as transaction_amount FROM transactions;
+SELECT product_id, quantity, price, (quantity * price) AS transaction_amount FROM transactions;
 ```
 
-Since the `AS` keyword is optional, we can omit it.
+Since the `AS` keyword is optional, we can omit it:
+
+```sql
+SELECT product_id, quantity, price, (quantity * price) transaction_amount FROM transactions;
+```
 
 <hr>
 
@@ -1300,7 +1303,7 @@ We can add more conditions using the `AND` and `OR`:
 
 ```sql
 SELECT * FROM users
-WHERE (country = 'Azerbaijan' OR country = 'Turkey') AND is_active = 't';
+WHERE (country = 'Azerbaijan' OR country = 'Turkiye') AND is_active = 't';
 ```
 
 Instead of having lots of `OR` keywords in a query, we can use the `IN` keyword. The `IN` operator returns true if a value is in a list of values:
@@ -1324,19 +1327,30 @@ WHERE country NOT IN ('Azerbaijan', 'Turkiye', 'Kazakhstan');
 We can indicate to return no more than specified number of rows using the `LIMIT` keyword:
 
 ```sql
-SELECT * FROM transactions LIMIT 5
+SELECT * FROM transactions LIMIT 5;
 ```
 
-Although the `LIMIT` keyword could be used, the official way of limiting the number of queried rows is `FETCH { FIRST | NEXT } [row_count] {ROW | ROWS } ONLY`. You can use `FIRST` and `NEXT`, `ROW`, and `ROWS` interchangeably because they are synonyms:
+Although the `LIMIT` keyword could be used, the official way of limiting the number of queried rows is this syntex:
 
 ```sql
-SELECT * FROM transactions FETCH FIRST 5 ROW ONLY
+FETCH { FIRST | NEXT } [row_count] {ROW | ROWS } ONLY
+```
+
+You can use `FIRST` and `NEXT`, `ROW`, and `ROWS` interchangeably because they are synonyms:
+
+```sql
+-- these give the same result
+SELECT * FROM transactions FETCH FIRST 5 ROW ONLY;
+SELECT * FROM transactions FETCH NEXT 5 ROW ONLY;
+
+SELECT * FROM transactions FETCH FIRST 5 ROWS ONLY;
+SELECT * FROM transactions FETCH NEXT 5 ROWS ONLY;
 ```
 
 To skip some rows before returning a subset of rows, you can use the `OFFSET` clause:
 
 ```sql
-SELECT * FROM transactions OFFSET 5
+SELECT * FROM transactions OFFSET 5;
 ```
 
 <hr>
@@ -1373,24 +1387,24 @@ SELECT * FROM users
 WHERE email LIKE '%.com%';
 ```
 
-The following `SELECT` statement uses the `LIKE` operator to find the products with the name containing exactly 10 characters:
+The following `SELECT` statement uses the `LIKE` operator to find the products with the name containing exactly 5 characters:
 
 ```sql
 SELECT * FROM users
-WHERE username LIKE '______';
+WHERE username LIKE '_____';
 ```
 
 If we want to have a case-insensitive query, we can use the `ILIKE` operator:
 
 ```sql
-SELECT country FROM users
+SELECT DISTINCT country FROM users
 WHERE country ILIKE '%u%';
 ```
 
 The `NOT` operator negates the result of the `LIKE` and `ILIKE` operators:
 
 ```sql
-SELECT country FROM users
+SELECT DISTINCT country FROM users
 WHERE country NOT ILIKE '%u%';;
 ```
 
@@ -1414,10 +1428,10 @@ The string you want to find may contain the wildcard characters `%` and `_` such
 
 ```sql
 SELECT price FROM transactions
-WHERE price LIKE '%100$%%' ESCAPE '$';
+WHERE price::TEXT LIKE '%120$%%' ESCAPE '$';
 ```
 
-In this example, we use the `$` character as an escape character. We specify the escape character `$` before `%` so the `LIKE` operator treats the character `%` that immediately follows 100 as a regular character.
+In this example, we use the `$` character as an escape character. We specify the escape character `$` before `%` so the `LIKE` operator treats the character `%` that immediately follows 120 as a regular character. We also cast the `price` column to the `TEXT` data type to be able to use the `LIKE` operator on it.
 
 #### Regular Expressions
 
@@ -1477,11 +1491,11 @@ SELECT * FROM products
 WHERE name ~ '\d+';
 ```
 
-The following query uses the case-insensitive match operator (`~*`) to find products with names that contain “iPhone” or “Galaxy”:
+The following query uses the case-insensitive match operator (`~*`) to find products with names that contain “mouse” or “keyboard”:
 
 ```sql
 SELECT * FROM products
-WHERE name ~ 'iphone|galaxy';
+WHERE name ~* 'mouse|keyboard';
 ```
 
 #### `SIMILAR TO` Operator
@@ -1522,7 +1536,7 @@ A _document_ is the basic unit of text you want to search through in a full-text
 
 PostgreSQL provides two specific data types to support full-text searches: `tsvector` and `tsquery`.
 
-`tsvector` represents a document optimized for text search by storing a sorted list of distinct normalized words. The technical terms of the normalized words are **lexemes**. Lexemes are words without variations, such as "teaches" and "teaching" words have the lexeme "teach".
+`tsvector` represents a document optimized for text search by storing a sorted list of distinct normalized words. The technical term of the normalized words are **lexemes**. Lexemes are words without variations, such as "teaches" and "teaching" words have the lexeme "teach".
 
 To convert a regular string to a `tsvector`, you use the `to_tsvector` function. For example:
 
