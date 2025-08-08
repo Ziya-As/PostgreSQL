@@ -1575,7 +1575,7 @@ It’s possible to use a value of `CHAR`, `VARCHAR`, and `TEXT` with the match o
 The `GROUP BY` clause allows you to group rows into groups based on values of one or more columns.
 
 ```sql
-SELECT country, COUNT(*) FROM users GROUP BY country;
+SELECT country FROM users GROUP BY country;
 ```
 
 It’s crucial to note that the columns in the `SELECT` clause must appear in the `GROUP BY` clause. You’ll encounter an error if you specify a column in the `SELECT` clause that does not appear in the `GROUP BY` clause.
@@ -1585,6 +1585,8 @@ It’s crucial to note that the columns in the `SELECT` clause must appear in th
 The `GROUP BY` clause is more useful when used with aggregate functions. PostgreSQL provides several aggregate functions that compute a single result from multiple input rows. These functions include `COUNT`, `SUM`, `MAX`, `MIN`, and `AVG` which respectively return the number of rows, the sum of a selected column, the largest value, the smallest value, and the average value for a specific column.
 
 ```sql
+SELECT country, COUNT(*) FROM users GROUP BY country;
+
 SELECT MAX(amount) FROM transactions;
 ```
 
@@ -1601,7 +1603,7 @@ ORDER BY 2 DESC;
 
 #### Grouping sets
 
-The `GROUPING SETS` is an advanced feature of the `GROUP BY` clause that allows you to create multiple groupings within the same query. The `GROUPING SETS` enables multiple groupings within the same query without using multiple queries or the `UNION` operator. Here’s the general syntax:
+The `GROUPING SETS` is an advanced feature of the `GROUP BY` clause. The `GROUPING SETS` enables multiple groupings within the same query without using multiple queries or the `UNION` operator. Here’s the general syntax:
 
 ```sql
 SELECT country, is_active, COUNT(account_balance) FROM users
@@ -1626,7 +1628,7 @@ The query creates four grouping sets:
 
 #### `GROUPING` function
 
-The `GROUPING` function takes a column and returns 1 if it is aggregated and 0 otherwise.
+We might be confused with the result of `GROUPING SETs`. To alleviate the situation and understand which row is the result of which grouping, we can use the `GROUPING` function. It takes a column and returns 0 if the column is part of the current grouping set.
 
 ```sql
 SELECT
@@ -1653,9 +1655,17 @@ ORDER BY
 The `GROUP BY` clause can only generate a single level of aggregation. To generate multiple levels of aggregation, you use the `ROLLUP` option of the `GROUP BY` clause.
 
 ```sql
-SELECT country, is_active, COUNT(*) FROM users
+SELECT
+	country,
+	is_active,
+	COUNT(*),
+	GROUPING (country) c_group,
+	GROUPING (is_active) act_group
+FROM users
 GROUP BY
-ROLLUP(country, is_active);
+	ROLLUP (country, is_active)
+ORDER BY
+	c_group, act_group;
 ```
 
 In this syntax, the `ROLLUP(country, is_active)` generates the three groupings:
@@ -1673,12 +1683,19 @@ The `GROUP BY` clause allows you to group rows and calculate an aggregation of a
 To calculate aggregations of all possible combinations of a set of columns, you can use the `GROUP BY` clause with the `CUBE` option.
 
 ```sql
-SELECT country, is_active, COUNT(*) FROM users
+SELECT
+	country,
+	is_active,
+	COUNT(*),
+	GROUPING(country) c_group,
+	GROUPING(is_active) act_group
+FROM users
 GROUP BY
-CUBE (country, is_active);
+	CUBE (country, is_active)
+ORDER BY c_group, act_group;
 ```
 
-The following table explains the differences between `GROUPING SETS`, `ROLLUP` and `CUBE`:
+The following table explains the differences between `GROUPING SETS`, `ROLLUP`, and `CUBE`:
 
 | Option          | Description                                                                |
 | --------------- | -------------------------------------------------------------------------- |
