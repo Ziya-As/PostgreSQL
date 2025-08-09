@@ -1714,7 +1714,6 @@ You can use the `UNION` operator to append the result set of the second query to
 To sort the result set returned by the `UNION` operator, you can use an `ORDER BY` clause. However, you need to place the `ORDER BY` clause at the end of the second query:
 
 ```sql
--- not a good example
 SELECT username AS name
 FROM users
 
@@ -1724,7 +1723,7 @@ SELECT name
 FROM products;
 ```
 
-Sometimes, you may want an additional column to label where a row comes from which result set. To do that, you specify the fixed value and a column alias as follows:
+We may want an additional column to label which dataset a row comes from. To do that, we specify the fixed value and a column alias as follows:
 
 ```sql
 SELECT username AS name, 'users table' AS source FROM users
@@ -1732,17 +1731,20 @@ UNION
 SELECT name, 'products table' AS source FROM products;
 ```
 
-The `UNION` operator removes duplicate rows. The `UNION ALL` operator appends the second query’s result set to the first query’s result set and keep the duplicate row in the final result set:
+The `UNION` operator removes duplicate rows. The `UNION ALL` operator appends the second query’s result set to the first query’s result set and keeps the duplicate row in the final result set:
 
 ```sql
--- not a good example
-SELECT username AS name
-FROM users
-
+-- compare this
+SELECT user_id FROM users
 UNION ALL
+SELECT user_id FROM transactions
+ORDER BY 1;
 
-SELECT name
-FROM products;
+-- to this
+SELECT user_id FROM users
+UNION
+SELECT user_id FROM transactions
+ORDER BY 1;
 ```
 
 Both `SELECT` statements need to adhere to the following rules:
@@ -1766,7 +1768,7 @@ Both `SELECT` statements need to adhere to the following rules:
 - Having the same number of columns in the result sets.
 - The corresponding columns have compatible data types.
 
-The `INTERSECT` operator will include distinct rows from both queries. To sort the result set of a query that involves the `INTERSECT` operator, you place the `ORDER BY` clause in the last query.
+To sort the result set of a query that involves the `INTERSECT` operator, you place the `ORDER BY` clause in the last query.
 
 To include duplicate rows in the result, you can use the `INTERSECT ALL` operator:
 
