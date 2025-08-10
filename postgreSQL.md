@@ -58,6 +58,7 @@
       - [`INTERSECT`](#intersect)
       - [`EXCEPT`](#except)
   - [Some useful functions and operators](#some-useful-functions-and-operators)
+    - [`IS NULL` Operator](#is-null-operator)
     - [`COALESCE`](#coalesce)
     - [`NULLIF`](#nullif)
     - [`GREATEST`](#greatest)
@@ -66,7 +67,6 @@
     - [`EXTRACT`](#extract)
     - [`AGE`](#age)
     - [Concatenation](#concatenation)
-    - [`IS NULL` Operator](#is-null-operator)
   - [Subquery](#subquery)
     - [Subquery](#subquery-1)
     - [Correlated Subquery](#correlated-subquery)
@@ -1803,6 +1803,30 @@ To retain the duplicate rows in the final result set, you use the `EXCEPT ALL` o
 
 ## Some useful functions and operators
 
+### `IS NULL` Operator
+
+To check if a value is NULL, we cannot compare it with NULL using the equal to operator. To compare a value with NULL, we use the `IS NULL` operator.
+
+```sql
+SELECT bio, bio IS NULL FROM users;
+
+SELECT username FROM users
+WHERE bio IS NULL;
+```
+
+To negate the result of the `IS NULL` operator, we use the `IS NOT NULL` operator.
+
+```sql
+SELECT bio, bio IS NOT NULL FROM users;
+
+SELECT username FROM users
+WHERE bio IS NOT NULL;
+```
+
+If we want to handle NULL using functions instead of the `IS NULL` operator, we can use the `NULLIF`, `ISNULL`, and `COALESCE` functions.
+
+<hr>
+
 ### `COALESCE`
 
 `COALESCE` function returns the first non-null value among its arguments. If all arguments are NULL, it returns NULL. This function is particularly useful for replacing NULL values with alternative values for display purposes without updating the actual data.
@@ -1859,7 +1883,7 @@ SELECT LEAST (1, 2, 3, 4, NULL) smallest;
 The `NOW()` function returns the current date and time with timezone, which is an alias for the `current_timestamp` function.
 
 ```sql
-SELECT NOW()
+SELECT NOW();
 ```
 
 We can also use the `NOW()` function to return either the date or the time:
@@ -1876,44 +1900,39 @@ SELECT NOW()::TIME;
 The `EXTRACT()` function is used to retrieve specific components such as year, month, or day from date/time values.
 
 ```sql
-SELECT EXTRACT(YEAR FROM NOW())
-SELECT EXTRACT(MONTH FROM NOW())
-SELECT EXTRACT(WEEK FROM NOW())
-SELECT EXTRACT(DAY FROM NOW())
-SELECT EXTRACT(DOW FROM NOW())
-SELECT EXTRACT(CENTURY FROM NOW())
+SELECT EXTRACT(YEAR FROM NOW()) ;
+SELECT EXTRACT(MONTH FROM NOW()) ;
+SELECT EXTRACT(WEEK FROM NOW()) ;
+SELECT EXTRACT(DAY FROM NOW()) ;
+SELECT EXTRACT(DOW FROM NOW()) ;
+SELECT EXTRACT(CENTURY FROM NOW()) ;
 ```
 
 The `EXTRACT()` function is also used to extract hour, minute, and second.
 
 ```sql
-SELECT EXTRACT(HOUR FROM NOW())
-SELECT EXTRACT(MINUTE FROM NOW())
-SELECT EXTRACT(SECOND FROM NOW())
+SELECT EXTRACT(HOUR FROM NOW());
+SELECT EXTRACT(MINUTE FROM NOW());
+SELECT EXTRACT(SECOND FROM NOW());
 ```
 
 The second includes the fraction part. To remove it, you can cast the seconds to integers using the cast operator `::`.
 
 ```sql
-SELECT EXTRACT(SECOND FROM NOW()):: INT s
+SELECT EXTRACT(SECOND FROM NOW()):: INT s;
 ```
 
 We can extract data from an `INTERVAL` as well:
 
 ```sql
-SELECT
-  EXTRACT(
-    DAY
-    FROM
-      INTERVAL '2 days 5 hours'
-  );
+SELECT EXTRACT(DAY FROM INTERVAL '2 days 5 hours');
 ```
 
 <hr>
 
 ### `AGE`
 
-The PostgreSQL `AGE()` function calculates the difference between two dates, returning the result in years, months, and days.
+The `AGE()` function calculates the difference between two dates, returning the result in years, months, and days.
 
 ```sql
 -- bought_at - NOW()
@@ -1926,47 +1945,23 @@ It can also be used to find the age between a specific date and the current date
 
 ### Concatenation
 
-To concatenate two strings into a single string, you use the concatenation operator `||`:
+To concatenate two strings into a single string, we use the concatenation operator `||`:
 
 ```sql
 SELECT username || ' from ' || country FROM users;
 ```
 
-Besides the concatenation operator, PostgreSQL offers the `CONCAT()` function that concatenates multiple strings into a string:
+Besides the concatenation operator, PostgreSQL offers the `CONCAT()` function that concatenates multiple strings into a single one:
 
 ```sql
 SELECT CONCAT(username, ' from ', country) FROM users;
 ```
 
-To concatenate strings with a separator, you use the `CONCAT_WS()` function. The first argument to the `CONCAT_WS()` function is the separator. Note that WS stands for With Separator.
+To concatenate strings with a separator, we use the `CONCAT_WS()` function. The first argument to the `CONCAT_WS()` function is the separator. Note that WS stands for With Separator.
 
 ```sql
 SELECT CONCAT_WS(' from ', username, country) FROM users;
 ```
-
-<hr>
-
-### `IS NULL` Operator
-
-To check if a value is NULL, you cannot compare it with NULL using the equal to operator. To compare a value with NULL, you use the `IS NULL` operator.
-
-```sql
-SELECT bio, bio IS NULL FROM users;
-
-SELECT username FROM users
-WHERE bio IS NULL;
-```
-
-To negate the result of the `IS NULL` operator, you use the `IS NOT NULL` operator.
-
-```sql
-SELECT bio, bio IS NOT NULL FROM users;
-
-SELECT username FROM users
-WHERE bio IS NULL;
-```
-
-If you want to handle NULL using functions instead of the `IS NULL` operator, you can use the `NULLIF`, `ISNULL`, and `COALESCE` functions.
 
 <hr>
 <hr>
@@ -1975,7 +1970,7 @@ If you want to handle NULL using functions instead of the `IS NULL` operator, yo
 
 ### Subquery
 
-PostgreSQL allows you to embed a query within another query. This embedded query is called a _subquery_. The query that contains a subquery is called an _outer query_.
+PostgreSQL allows we to embed a query within another query. This embedded query is called a _subquery_. The query that contains a subquery is called an _outer query_.
 
 The subquery can be placed in different parts of the SQL code. It could be used with many keywords including `SELECT`, `FROM`, `WHERE`, and `JOIN` depending on what result the subquery returns.
 
