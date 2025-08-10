@@ -2118,7 +2118,7 @@ FROM cte_name;
 ```
 
 - The `WITH` keyword defines a common table expression (CTE). You can think of a CTE as a temporary table within the query.
-- The Main Query is a statement that uses the CTE by referencing the cte_name. The main query can be a `SELECT`, `INSERT`, `UPDATE`, `DELETE`, or `MERGE` statement.
+- The main query is a statement that uses the CTE by referencing the `cte_name`. The main query can be a `SELECT`, `INSERT`, `UPDATE`, `DELETE`, or `MERGE` statement.
 
 Here is an example:
 
@@ -2130,13 +2130,9 @@ WITH user_totals AS (
   FROM transactions
   GROUP BY user_id
 )
-SELECT
-  username,
-  total_spent
-FROM user_totals,
-     users
-WHERE user_totals.user_id = users.user_id
-  AND total_spent > 200;
+SELECT *
+FROM user_totals
+WHERE total_spent > 200;
 ```
 
 <hr>
