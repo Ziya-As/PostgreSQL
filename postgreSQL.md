@@ -31,6 +31,8 @@
       - [Primary Key](#primary-key)
       - [Foreign Key](#foreign-key)
   - [Inserting data into tables](#inserting-data-into-tables)
+  - [Updating data](#updating-data)
+  - [Deleting data from tables](#deleting-data-from-tables)
   - [Querying a database](#querying-a-database)
     - [Data for queries](#data-for-queries)
     - [Basic queries](#basic-queries)
@@ -82,8 +84,6 @@
     - [Dropping a database view](#dropping-a-database-view)
     - [Creating a materialized view](#creating-a-materialized-view)
     - [Dropping a materialized view](#dropping-a-materialized-view)
-  - [Updating data](#updating-data)
-  - [Deleting data from tables](#deleting-data-from-tables)
   - [Joins](#joins)
     - [Inner Join](#inner-join)
     - [Left Join](#left-join)
@@ -1089,6 +1089,74 @@ INSERT INTO transactions (
   user_id, amount, description
 ) VALUES (1, 100.00, 'Cloud service subscription')
 RETURNING transaction_id, amount, created_at;
+```
+
+The `ON CONFLICT` keyword is used to handle unique constraint violations during insert operations. It allows you to specify what action to take when a conflict occurs, such as updating the existing record or doing nothing.
+
+```sql
+INSERT INTO users (username, email, country)
+VALUES ('kerem', 'kerem@example.com', 'Turkiye')
+ON CONFLICT (username)
+DO NOTHING;
+```
+
+To update the existing record with new values when there is a conflict, we can use the following syntax:
+
+```sql
+INSERT INTO users (username, email, country, account_balance)
+VALUES ('ziya', 'ziya@example.com', 'Azerbaijan', 900.00)
+ON CONFLICT (username)
+DO UPDATE SET account_balance = EXCLUDED.account_balance;
+```
+
+The `SET` and `WHERE` clauses in `ON CONFLICT DO UPDATE` have access to the existing row using the table's name (or an alias), and to the row proposed for insertion using the special `excluded` table.
+
+<hr>
+<hr>
+
+## Updating data
+
+To update data in PostgreSQL, we use the `UPDATE` and `SET` statements, which allow us to modify existing records in a table.
+
+```sql
+UPDATE users
+SET account_balance = account_balance + 100
+WHERE username = 'hasan';
+```
+
+The `UPDATE` statement offers the `RETURNING` clause that returns the updated rows.
+
+```sql
+UPDATE users
+SET account_balance = account_balance - 100
+WHERE username = 'hasan'
+RETURNING *;
+```
+
+<hr>
+<hr>
+
+## Deleting data from tables
+
+The `DELETE` statement permanently removes one or more rows from a table.
+
+```sql
+DELETE FROM products
+WHERE name = 'test product';
+```
+
+The `DELETE` statement has an optional `RETURNING` clause that returns the deleted rows.
+
+```sql
+DELETE FROM products
+WHERE name = 'test product';
+RETURNING *;
+```
+
+Here is how to delete all rows from a table:
+
+```sql
+DELETE FROM person;
 ```
 
 <hr>
@@ -2295,74 +2363,6 @@ To delete a materialized view, you use the `DROP MATERIALIZED VIEW` statement:
 
 ```sql
 DROP MATERIALIZED VIEW [ IF EXISTS ] view_name CASCADE;
-```
-
-<hr>
-<hr>
-
-## Updating data
-
-To update data in PostgreSQL, we use the `UPDATE` and `SET` statements, which allow us to modify existing records in a table.
-
-```sql
-UPDATE users
-SET account_balance = account_balance + 100
-WHERE username = 'hasan';
-```
-
-The `UPDATE` statement offers the `RETURNING` clause that returns the updated rows.
-
-```sql
-UPDATE users
-SET account_balance = account_balance - 100
-WHERE username = 'hasan'
-RETURNING *;
-```
-
-The `ON CONFLICT` keyword is used to handle unique constraint violations during insert operations. It allows you to specify what action to take when a conflict occurs, such as updating the existing record or doing nothing.
-
-```sql
-INSERT INTO users (username, email, country)
-VALUES ('kerem', 'kerem@example.com', 'Turkiye')
-ON CONFLICT (username)
-DO NOTHING;
-```
-
-To update the existing record with new values when there is a conflict, we can use the following syntax:
-
-```sql
-INSERT INTO users (username, email, country, account_balance)
-VALUES ('ziya', 'ziya@example.com', 'Azerbaijan', 900.00)
-ON CONFLICT (username)
-DO UPDATE SET account_balance = EXCLUDED.account_balance;
-```
-
-The `SET` and `WHERE` clauses in `ON CONFLICT DO UPDATE` have access to the existing row using the table's name (or an alias), and to the row proposed for insertion using the special `excluded` table.
-
-<hr>
-<hr>
-
-## Deleting data from tables
-
-The `DELETE` statement permanently removes one or more rows from a table.
-
-```sql
-DELETE FROM products
-WHERE name = 'test product';
-```
-
-The `DELETE` statement has an optional `RETURNING` clause that returns the deleted rows.
-
-```sql
-DELETE FROM products
-WHERE name = 'test product';
-RETURNING *;
-```
-
-Here is how to delete all rows from a table:
-
-```sql
-DELETE FROM person;
 ```
 
 <hr>
