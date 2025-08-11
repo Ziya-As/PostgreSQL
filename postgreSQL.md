@@ -2210,9 +2210,9 @@ SELECT * FROM next_days;
 
 ### Creating a database view
 
-A view is a named query stored in the PostgreSQL database server. A view allows you to query data from it like a regular table but does not store the data physically. Therefore, a view is referred to as a virtual table.
+A view is a named query stored in the PostgreSQL database server. A view allows we to query data from it like a regular table but does not store the data physically. Therefore, a view is referred to as a virtual table.
 
-In PostgreSQL, you can create views that store data physically. These views are called _materialized views_.
+In PostgreSQL, we can create views that store data physically. These views are called _materialized views_.
 
 We use the `CREATE VIEW` statement to create a new view:
 
@@ -2234,7 +2234,7 @@ SELECT username, email, country FROM users;
 
 ### Replacing a database view
 
-If you want to modify an existing view, you can use the `OR REPLACE` clause in the `CREATE VIEW` statement:
+If you want to modify an existing view, we can use `CREATE OR REPLACE VIEW` statement:
 
 ```sql
 CREATE OR REPLACE VIEW view_name
@@ -2276,7 +2276,7 @@ query
 WITH DATA;
 ```
 
-Use the `WITH DATA` to load data from underlying tables into the view when you issue the `CREATE MATERIALIZED VIEW`.
+We use the `WITH DATA` to load data from underlying tables into the view when we issue the `CREATE MATERIALIZED VIEW` statement.
 
 ```sql
 CREATE MATERIALIZED VIEW IF NOT EXISTS view_name
@@ -2294,8 +2294,7 @@ Materialized views will not automatically update data from the underlying tables
 To delete a materialized view, you use the `DROP MATERIALIZED VIEW` statement:
 
 ```sql
-DROP MATERIALIZED VIEW [ IF EXISTS ] view_name
-CASCADE;
+DROP MATERIALIZED VIEW [ IF EXISTS ] view_name CASCADE;
 ```
 
 <hr>
