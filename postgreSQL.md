@@ -2390,7 +2390,7 @@ SELECT DISTINCT username, email FROM users
 INNER JOIN transactions ON users.user_id = transactions.user_id;
 ```
 
-Typing the same table names for every column is tedious. PostgreSQL supports temporary names for tables in a query using table aliases: `table_name AS table_alias`. Since the `AS` keyword is optional, you can ignore it like this: `table_name table_alias`. Then, we use these table aliases to reference the column’s names from both tables.
+Typing the same table names for every column is tedious. PostgreSQL supports temporary names for tables in a query using table aliases: `table_name AS table_alias`. Since the `AS` keyword is optional, you can ignore it like this: `table_name table_alias`. Then, we use these table aliases to reference the column names from both tables.
 
 ```sql
 SELECT username, email FROM users AS u
@@ -2473,7 +2473,7 @@ PostgreSQL self-join is a powerful technique that allows you to join a table to 
 
 PostgreSQL does not allow you to use the same table multiple times within the same SQL statement. If you do so, PostgreSQL will issue a syntax error. To use the same table multiple times within a statement, you must assign the table different aliases. In this case, PostgreSQL will treat these aliases as separate tables.
 
-Here’s the syntax of a self-join:
+Here’s an example of a self-join:
 
 ```sql
 SELECT
@@ -2527,7 +2527,7 @@ For example:
 SELECT u.username, u.country, p.name FROM users u, products p;
 ```
 
-If `table1` has n rows and `table2` has m rows, the `CROSS JOIN` will return a result set that has nxm rows. In practice, you use a cross-join when you want to have all possible combinations of rows from both tables.
+If `table1` has n rows and `table2` has m rows, the `CROSS JOIN` will return a result set that has $nxm$ rows. In practice, you use a cross-join when you want to have all possible combinations of rows from both tables.
 
 <hr>
 
