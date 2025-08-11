@@ -2859,7 +2859,7 @@ action;
 Here are the main actions:
 
 - Renaming a table.
-- Rename a column.
+- Renaming a column.
 - Adding one or more columns to the table.
 - Removing a column.
 - Applying a constraint to a column.
@@ -2887,7 +2887,7 @@ RENAME TO prods;
 
 ### Renaming a column
 
-To rename a column, you use the `ALTER TABLE ... RENAME COLUMN` statement:
+To rename a column, we use the `ALTER TABLE ... RENAME COLUMN` statement:
 
 ```sql
 ALTER TABLE table_name
@@ -2895,9 +2895,9 @@ RENAME COLUMN column_name
 TO new_column_name;
 ```
 
-To make it shorter, you can omit the `COLUMN` keyword in the `RENAME COLUMN`.
+To make it shorter, we can omit the `COLUMN` keyword in the `RENAME COLUMN`.
 
-If the column you change has references such as views, foreign key constraints, triggers, user-defined functions, and stored procedures, PostgreSQL automatically changes the column names in these objects.
+If the column we change has references such as views, foreign key constraints, triggers, user-defined functions, and stored procedures, PostgreSQL automatically changes the column names in these objects.
 
 ```sql
 ALTER TABLE products
@@ -2940,6 +2940,22 @@ PostgreSQL does not allow you to insert a new column at a specified position in 
 3. Copy data from the old table to the new table.
 4. Drop the old table.
 
+Here are 2 examples of copying a column:
+
+```sql
+-- copying to an empty table
+INSERT INTO new_products(name, bought_at)
+SELECT products.name, products.bought_at FROM products;
+```
+
+```sql
+-- copying to a non-empty table
+UPDATE new_products
+SET name = products.name
+FROM products
+WHERE id = products.product_id;
+```
+
 <hr>
 
 ### Changing the column data type
@@ -2964,13 +2980,13 @@ SET DATA TYPE TIMESTAMP(2);
 
 ### Applying constraints to columns
 
-You use the `ALTER TABLE ... ALTER COLUMN SET` statement to add a constraint to a column.
+You use the `ALTER TABLE ... ALTER COLUMN ... SET` and `ALTER TABLE ... ALTER COLUMN ... ADD` statements to add a constraint to a column.
 
 The following statement applies a `NOT NULL` constraint to a column:
 
 ```sql
-ALTER TABLE table_name
-ALTER COLUMN column_name
+ALTER TABLE new_products
+ALTER COLUMN bought_at
 SET NOT NULL;
 ```
 
@@ -3004,11 +3020,26 @@ ALTER TABLE users
 ADD UNIQUE (username, email);
 ```
 
+Here is how to list all the constraints of a table:
+
+```sql
+SELECT constraint_name, constraint_type
+FROM information_schema.table_constraints
+WHERE table_name = 'new_products';
+```
+
 Here is how to drop a constraint:
 
 ```sql
 ALTER TABLE new_products
 DROP CONSTRAINT "new_products_bought_at_check1";
+```
+
+The `NOT NULL` constraints cannot be dropped using the `DROP CONSTRAINT` syntax; the `DROP NOT NULL` clause must be used instead.
+
+```sql
+ALTER TABLE new_products
+ALTER COLUMN bought_at DROP NOT NULL;
 ```
 
 <hr>
