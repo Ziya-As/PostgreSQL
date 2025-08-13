@@ -3136,7 +3136,7 @@ TRUNCATE TABLE table1, table2, ...;
 
 ## User-defined Functions
 
-PostgreSQL allows you to create a new function using the `CREATE FUNCTION` statement. The following shows the basic syntax of the `CREATE FUNCTION` statement:
+PostgreSQL allows us to create a new function using the `CREATE FUNCTION` statement. The following shows the basic syntax of the `CREATE FUNCTION` statement:
 
 ```sql
 CREATE [OR REPLACE] FUNCTION function_name (parameters)
@@ -3151,15 +3151,15 @@ LANGUAGE SQL;
 ```
 
 - `RETURNS return_type` specifies the data type of a value the function will return. If the function returns no value, the return type is `VOID`.
-- `LANGUAGE SQL` specifies that the function is using SQL. PostgreSQL allows you to write user-defined functions in various languages beyond SQL. These are known as procedural languages (PLs). For example, we indicate that we use postgreSQL database system with `plpgSQL`.
+- `LANGUAGE SQL` specifies that the function is using SQL. PostgreSQL allows us to write user-defined functions in various languages beyond SQL. These are known as procedural languages (PLs). For example, we indicate that we use postgreSQL database system with `plpgSQL`.
 
-To call a user-defined function, you use the `SELECT` statement, followed by the function name and arguments:
+To call a user-defined function, we use the `SELECT` statement, followed by the function name and arguments:
 
 ```sql
 SELECT function_name(arguments);
 ```
 
-The following example uses the `CREATE FUNCTION` statement to create a function that adds a new warehouse with name and location:
+The following example uses the `CREATE FUNCTION` statement to create a function that adds a new product:
 
 ```sql
 CREATE OR REPLACE FUNCTION add_product(
@@ -3172,12 +3172,12 @@ $$
 BEGIN
     INSERT INTO new_products(name, bought_at)
     VALUES(product_name, order_date);
-END
+END;
 $$
 LANGUAGE plpgsql;
 ```
 
-You cannot use the parameter names the same as the column names of tables used inside the function. If you do so, PostgreSQL will issue an error. The reason is that PostgreSQL will confuse the parameters and column names.
+We cannot use the parameter names the same as the column names of tables used inside the function. If you do so, PostgreSQL will issue an error. The reason is that PostgreSQL will confuse the parameters and column names.
 
 This is how we call the above function:
 
@@ -3205,7 +3205,7 @@ $$
 LANGUAGE plpgsql;
 ```
 
-In the above code, we declare the variable using the `DECLARE` statement and assigned a value to the variable using the `INTO` keyword. We can use `:=` to assign a simple expression to a variable:
+In the above code, we declare the variable using the `DECLARE` statement and assign a value to the variable using the `INTO` keyword. We can use `:=` to assign a simple expression to a variable:
 
 ```sql
 CREATE OR REPLACE FUNCTION add_five_to_five()
@@ -3230,6 +3230,15 @@ The `DROP FUNCTION` statement allows you to remove a user-defined function perma
 DROP FUNCTION [IF EXISTS] function_name(parameters);
 ```
 
+For example:
+
+```sql
+DROP FUNCTION IF EXISTS add_product(
+	product_name VARCHAR,
+	order_date TIMESTAMPTZ(3)
+);
+```
+
 If a function has dependent objects like operators and triggers, you cannot drop it with the above code. Fortunately, you can drop the function and its dependent objects by using the `CASCADE` option explicitly:
 
 ```sql
@@ -3244,6 +3253,15 @@ To remove multiple functions at once, you can specify a comma-separated list of 
 DROP FUNCTION
     function_name1(parameter),
     function_name2(parameter), ...;
+```
+
+Here is an example:
+
+```sql
+DROP FUNCTION IF EXISTS
+	get_max_quantity,
+	add_five
+CASCADE;
 ```
 
 <hr>
