@@ -3372,7 +3372,14 @@ To create an index in PostgreSQL, we use the `CREATE INDEX` statement:
 
 ```sql
 CREATE INDEX [IF NOT EXISTS] [index_name]
-ON  tablename (column1, column2);
+ON tablename (column1, column2);
+```
+
+Here is an example:
+
+```sql
+CREATE INDEX IF NOT EXISTS idx_transactions_user_product
+ON transactions (user_id, product_id);
 ```
 
 <hr>
@@ -3385,6 +3392,14 @@ When we query the indexed columns, PostgreSQL has a specific software component 
 EXPLAIN ANALYZE query;
 ```
 
+For example:
+
+```sql
+EXPLAIN ANALYZE
+SELECT * FROM transactions
+WHERE user_id = 2 AND product_id = 5;
+```
+
 <hr>
 
 ### Listing indexes
@@ -3392,7 +3407,7 @@ EXPLAIN ANALYZE query;
 To list all the indexes, we can use the below code:
 
 ```sql
-SELECT * FROM pg_indexes
+SELECT * FROM pg_indexes;
 ```
 
 <hr>
@@ -3403,10 +3418,16 @@ To drop an index, we use the below command:
 
 ```sql
 DROP INDEX [CONCURRENTLY] [IF EXISTS] index_name
-[CASCADE | RESTRICT]
+[CASCADE | RESTRICT];
 ```
 
 The `CONCURRENTLY` option is used to delete an index without locking out concurrent selects, inserts, updates, and deletes on the table.
+
+Here is an example of dropping an index:
+
+```sql
+DROP INDEX CONCURRENTLY IF EXISTS idx_transactions_user_product;
+```
 
 <hr>
 
@@ -3430,6 +3451,14 @@ In PostgreSQL, a primary key is a special kind of unique index that:
 
 In contrast, a unique index allows NULLs unless you specify `NULL NOT DISTINCT` option.
 
+Here is an example of creating a unique index:
+
+```sql
+CREATE UNIQUE INDEX idx_users_email_unique
+ON users (email)
+NULLS NOT DISTINCT;
+```
+
 <hr>
 
 ### Expression Index
@@ -3441,6 +3470,21 @@ To create an expression index, you use the following form of the `CREATE INDEX` 
 ```sql
 CREATE INDEX [index_name]
 ON table_name(expression);
+```
+
+Here is an example of creating an expression index:
+
+```sql
+CREATE INDEX idx_users_lower_email
+ON users (LOWER(email));
+```
+
+Now, the index stores the result of `LOWER(email)` for each row. So, when our query also uses `LOWER(email)`, PostgreSQL can use this index instead of scanning all rows. We can check if PostgreSQL uses the index by running:
+
+```sql
+EXPLAIN
+SELECT * FROM users
+WHERE LOWER(email) = 'ziya@example.com';
 ```
 
 <hr>
@@ -3457,6 +3501,14 @@ ON table_name (column1, column2)
 WHERE condition;
 ```
 
+Here is an example of creating a partial index:
+
+```sql
+CREATE INDEX idx_transactions_large_orders
+ON transactions (user_id, product_id)
+WHERE quantity > 1;
+```
+
 <hr>
 
 ### Covering Index
@@ -3469,6 +3521,25 @@ To create a covering index, you can use the `CREATE INDEX` statement with an `IN
 CREATE INDEX [index_name]
 ON table_name(indexed_columns)
 INCLUDE(extra_columns);
+```
+
+Here is an example:
+
+```sql
+CREATE INDEX idx_transactions_user_product_covering
+ON transactions (user_id, product_id)
+INCLUDE (quantity, price);
+```
+
+- `user_id`, `product_id` - These are the indexed columns used for searching/filtering.
+- `quantity`, `price` - These are the extra columns stored in the index so PostgreSQL can fetch them without going back to the table.
+
+Here is an example query that would benefit from this index:
+
+```sql
+SELECT quantity, price
+FROM transactions
+WHERE user_id = 2 AND product_id = 4;
 ```
 
 <hr>
