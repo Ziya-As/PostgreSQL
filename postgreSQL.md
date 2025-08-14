@@ -128,7 +128,7 @@
     - [Dropping Triggers](#dropping-triggers)
     - [Event Triggers](#event-triggers)
   - [Window functions](#window-functions)
-    - [Adding more data to pracice window functions](#adding-more-data-to-pracice-window-functions)
+    - [Adding more data to practice window functions](#adding-more-data-to-practice-window-functions)
     - [Intro](#intro)
     - [`ROW_NUMBER()`](#row_number)
     - [`RANK()`](#rank)
@@ -3549,7 +3549,7 @@ WHERE user_id = 2 AND product_id = 4;
 
 ### Composite Types
 
-A composite type represents the structure of a row or record. For example, the following statement creates a composite type to store shipping details for a product transaction:
+A composite type is a list of field names and their data types. A composite type represents the structure of a row or record. For example, the following statement creates a composite type to store shipping details for a product transaction:
 
 ```sql
 CREATE TYPE shipping_info AS (
@@ -3559,7 +3559,7 @@ CREATE TYPE shipping_info AS (
 );
 ```
 
-A composite type is a list of field names and their data types. PostgreSQL allows you to use composite types in the same way as simple types. Here we create a table that includes a column with a composite type:
+PostgreSQL allows you to use composite types in the same way as simple types. Here we create a table that includes a column with a composite type:
 
 ```sql
 CREATE TABLE shipments (
@@ -3607,9 +3607,9 @@ FROM
   shipments;
 ```
 
-In the `SELECT` statement, if you don’t use the parentheses, PostgreSQL might misinterpret the location type as a table name and issue an error.
+In the `SELECT` statement, if you don’t use the parentheses, PostgreSQL might misinterpret the `shipping_details` as a table name and issue an error.
 
-The following statement updates the address, city, and postal_code of the shipment:
+The following statement updates the address, city, and postal code of the shipment:
 
 ```sql
 UPDATE shipments
@@ -3661,7 +3661,7 @@ CHECK (
 );
 ```
 
-Change the type of the `shipping_details` column to `shipment_domain`:
+Change the type of the `shipping_details` column to `shipment_info_domain`:
 
 ```sql
 ALTER TABLE shipments
@@ -4255,7 +4255,7 @@ SELECT * FROM pg_event_trigger;
 
 ## Window functions
 
-### Adding more data to pracice window functions
+### Adding more data to practice window functions
 
 ```sql
 -- Add extra transactions to users so they have multiple rows
