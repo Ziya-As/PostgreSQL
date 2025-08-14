@@ -3269,7 +3269,17 @@ CASCADE;
 
 ## Stored Procedures
 
-A stored procedure is a precompiled set of SQL statements stored and executed on a PostgreSQL database server. To define a stored procedure, you use the `CREATE PROCEDURE` statement with the following syntax. If you want to execute multiple SQL statements, place them between a `BEGIN ATOMIC ... END` block:
+A stored procedure is a precompiled set of SQL statements stored and executed on a PostgreSQL database server. To define a stored procedure, we use the `CREATE PROCEDURE` statement with the following syntax:
+
+```sql
+CREATE OR REPLACE PROCEDURE procedure_name(parameter_list)
+LANGUAGE SQL
+BEGIN ATOMIC
+    sql_statement1;
+END;
+```
+
+If we want to execute multiple SQL statements, we place them one after another in the a `BEGIN ... END` block:
 
 ```sql
 CREATE OR REPLACE PROCEDURE procedure_name(parameter_list)
@@ -3280,7 +3290,7 @@ BEGIN ATOMIC
 END;
 ```
 
-In this syntax, the `BEGIN ATOMIC ... END` block ensures that all SQL statements within the block succeed, or none of them do. In other words, it will execute all the statements as a single atomic unit.
+Here is an example:
 
 ```sql
 CREATE OR REPLACE PROCEDURE add_transaction(
@@ -3310,7 +3320,7 @@ END;
 $$;
 ```
 
-To execute a PostgreSQL stored procedure, use the `CALL` statement with the following syntax:
+To execute a PostgreSQL stored procedure, we use the `CALL` statement with the following syntax:
 
 ```sql
 CALL procedure_name(arguments);
@@ -3322,20 +3332,20 @@ For example:
 CALL add_transaction(1, 3, 1, 250.00);
 ```
 
-If a stored procedure is no longer in use, you can remove it from the database using the `DROP PROCEDURE` statement.
+If a stored procedure is no longer in use, we can remove it from the database using the `DROP PROCEDURE` statement.
 
 ```sql
 DROP PROCEDURE [IF EXISTS] procedure_name (parameter_list);
 ```
 
-PostgreSQL will raise an error if you attempt to drop a stored procedure with dependent objects. To remove the stored procedure as well as the objects that depend on it, you use the `CASCADE` option:
+PostgreSQL will raise an error if we attempt to drop a stored procedure with dependent objects. To remove the stored procedure as well as the objects that depend on it, we use the `CASCADE` option:
 
 ```sql
 DROP PROCEDURE [IF EXISTS] procedure_name (parameter_list)
 CASCADE;
 ```
 
-You can remove multiple stored procedures using a single `DROP PROCEDURE` statement:
+We can remove multiple stored procedures using a single `DROP PROCEDURE` statement:
 
 ```sql
 DROP PROCEDURE
