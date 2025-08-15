@@ -121,7 +121,7 @@
     - [`XML` Data Type](#xml-data-type)
     - [`ENUM`](#enum)
     - [`JSON`](#json)
-    - [Cast](#cast)
+  - [Cast](#cast)
   - [Triggers](#triggers)
     - [Creating Triggers](#creating-triggers)
     - [Disabling and Enabling Triggers](#disabling-and-enabling-triggers)
@@ -3751,7 +3751,7 @@ SELECT product_id, comment_matrix FROM product_reviews
 WHERE 'Easy to use' = ANY (comment_matrix);
 ```
 
-To expand an arrays into a set of rows, you use the `UNNEST` function:
+To expand an arrays into a set of rows, we use the `UNNEST` function:
 
 ```sql
 SELECT
@@ -3777,7 +3777,7 @@ SET rating_history = ARRAY_APPEND(rating_history, 3)
 WHERE product_id = 1;
 ```
 
-To delete all occurrences of an element from an array, you use the `ARRAY_REMOVE` function: `ARRAY_REMOVE(array, element)`. The below code removes all occurrences of 3 in the `rating_history` array:
+To delete all occurrences of an element from an array, we use the `ARRAY_REMOVE` function: `ARRAY_REMOVE(array, element)`. The below code removes all occurrences of 3 in the `rating_history` array:
 
 ```sql
 UPDATE product_reviews
@@ -3789,7 +3789,7 @@ WHERE product_id = 1;
 
 ### `XML` Data Type
 
-PostgreSQL supports built-in `XML` data type that allows you to store well-formed XML documents and XML fragments. To define a column of the `XML` type, you use the following syntax:
+PostgreSQL supports built-in `XML` data type that allows us to store well-formed XML documents and XML fragments. To define a column of the `XML` type, we use the following syntax:
 
 ```sql
 column_name XML
@@ -3798,7 +3798,7 @@ column_name XML
 The built-in `XML` data type has the following advantages over using `TEXT` data type to store XML:
 
 - Type safety: PostgreSQL validates XML, ensuring the XML data is valid.
-- Built-in functions: PostgreSQL offers built-in functions to help you manipulate XML data effectively.
+- Built-in functions: PostgreSQL offers built-in functions to help us manipulate XML data effectively.
 
 ```sql
 INSERT INTO
@@ -3833,7 +3833,7 @@ FROM
 
 ### `ENUM`
 
-PostgreSQL allows you to define a column that stores a list of fixed values using an enum. To create an enum, you use the `CREATE TYPE` statement with the following syntax:
+PostgreSQL allows us to define a column that stores a list of fixed values using an enum. To create an enum, we use the `CREATE TYPE` statement with the following syntax:
 
 ```sql
 CREATE TYPE enum_name
@@ -3844,7 +3844,7 @@ ENUM(value1, value2, value3);
 - Enum values are case-sensitive.
 - A value in the `ENUM()` is lower than the value that appears after it and higher than before.
 
-For example:
+Here is an example of creating an enum:
 
 ```sql
 CREATE TYPE delivery_status AS ENUM (
@@ -3890,7 +3890,7 @@ ADD VALUE IF NOT EXISTS 'return_scheduled'
 AFTER 'cancelled';
 ```
 
-- If new value's position is not defined, the default position is the end of the list.
+If new value's position is not defined, the default position is the end of the list.
 
 The `ENUM_RANGE()` function accepts an enum and returns the enum values as an array:
 
@@ -3943,7 +3943,7 @@ PostgreSQL has two built-in data types for storing JSON:
 - `JSON`: stores an exact copy of JSON data.
 - `JSONB`: stores the JSON data in binary format.
 
-The following table shows the key differences between JSON and JSONB types in PostgreSQL:
+The following table shows key differences between JSON and JSONB types in PostgreSQL:
 
 | Feature           | JSON                                                | JSONB                                                                |
 | ----------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
@@ -3990,7 +3990,7 @@ SELECT u.username, p.preferences ->> 'theme' theme FROM user_preferences p
 JOIN users u ON u.user_id = p.user_id;
 ```
 
-Here is a more complext example:
+Here is a more complex example:
 
 ```sql
 SELECT
@@ -4032,9 +4032,18 @@ SET preferences = jsonb_set(preferences::jsonb, '{notifications, sms}', 'true')
 WHERE user_id = 1;
 ```
 
+Here is another example:
+
+```sql
+UPDATE user_preferences
+SET preferences = jsonb_set(preferences::jsonb, '{theme}', '"dark"')
+WHERE user_id = 2;
+```
+
+<hr>
 <hr>
 
-### Cast
+## Cast
 
 To convert a value of one data type to another, we use the `CAST()` function or cast operator (`::`).
 
