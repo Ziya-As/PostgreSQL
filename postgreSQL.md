@@ -3279,7 +3279,7 @@ BEGIN ATOMIC
 END;
 ```
 
-If we want to execute multiple SQL statements, we place them one after another in the a `BEGIN ... END` block:
+If we want to execute multiple SQL statements, we place them one after another in the a `BEGIN ATOMIC ... END` block:
 
 ```sql
 CREATE OR REPLACE PROCEDURE procedure_name(parameter_list)
@@ -3290,7 +3290,7 @@ BEGIN ATOMIC
 END;
 ```
 
-Here is an example:
+Here is an example. In this example, we use `LANGUAGE plpgsql`. This procedural language supports `BEGIN ... END` block. That's what we use instead of `BEGIN ATOMIC ... END` block:
 
 ```sql
 CREATE OR REPLACE PROCEDURE add_transaction(
