@@ -4120,12 +4120,14 @@ CREATE [OR REPLACE] TRIGGER trigger_name
 { INSERT | DELETE | TRUNCATE | UPDATE [OF column_name, ...] }
 ON table_name
 [ FOR [ EACH ] { ROW | STATEMENT } ]
+[ WHEN condition ]
 EXECUTE { FUNCTION | PROCEDURE } function_name(arguments);
 ```
 
 Here is an example of creating a trigger:
 
 ```sql
+-- create a table to save logs
 CREATE TABLE transaction_log (
   log_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id INT,
@@ -4134,19 +4136,20 @@ CREATE TABLE transaction_log (
   logged_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+-- trigger function
 CREATE OR REPLACE FUNCTION log_new_transaction()
-RETURNS trigger AS
+RETURNS TRIGGER AS
 $$
 BEGIN
   INSERT INTO transaction_log (user_id, product_id, quantity)
   VALUES (NEW.user_id, NEW.product_id, NEW.quantity);
 
   RETURN NEW;
-END
+END;
 $$ LANGUAGE plpgsql;
 
-
-CREATE TRIGGER after_transaction_insert
+-- trigger
+CREATE OR REPLACE TRIGGER after_transaction_insert
 AFTER INSERT ON transactions
 FOR EACH ROW
 EXECUTE FUNCTION log_new_transaction();
@@ -4165,19 +4168,21 @@ SELECT * FROM transaction_log ORDER BY log_id DESC;
 
 ### Disabling and Enabling Triggers
 
-To disable a trigger, you can use the `ALTER TABLE DISABLE TRIGGER` statement with the following syntax:
+To disable a trigger, you can use the `ALTER TABLE ... DISABLE TRIGGER` statement with the following syntax:
 
 ```sql
 ALTER TABLE table_name
 DISABLE TRIGGER trigger_name | ALL;
 ```
 
+Here is an example of disabling a trigger:
+
 ```sql
 ALTER TABLE transactions
 DISABLE TRIGGER after_transaction_insert;
 ```
 
-If you want to turn off all table triggers, you can use the `ALL` keyword instead of disabling the trigger individually.
+If you want to turn off all table triggers, you can use the `ALL` keyword instead of disabling a trigger individually.
 
 To enable a trigger, you use the `ALTER TABLE ... ENABLE TRIGGER` statement:
 
@@ -4185,6 +4190,8 @@ To enable a trigger, you use the `ALTER TABLE ... ENABLE TRIGGER` statement:
 ALTER TABLE table_name
 ENABLE TRIGGER trigger_name | ALL;
 ```
+
+Here is an example:
 
 ```sql
 ALTER TABLE transactions
@@ -4205,6 +4212,8 @@ ON table_name
 [CASCADE | RESTRICT];
 ```
 
+Here is an example:
+
 ```sql
 DROP TRIGGER IF EXISTS after_transaction_insert
 ON transactions
@@ -4215,7 +4224,7 @@ CASCADE;
 
 ### Event Triggers
 
-Unlike regular triggers, event triggers are not associated with a table but a database. Event triggers respond to the database schema change events such as adding a column, dropping a table and so on.
+Unlike regular triggers, event triggers are not associated with a table but a database. Event triggers respond to the database schema change events such as adding a column, dropping a table and so on. Only superusers can create event triggers. Another notable thing is that there is no `CREATE EVENT TRIGGER` statement in the SQL standard.
 
 In PostgreSQL, event triggers can track the following events:
 
@@ -4233,6 +4242,8 @@ WHEN condition
 EXECUTE FUNCTION function_name();
 ```
 
+The event trigger function returns `EVENT_TRIGGER` instead of `TRIGGER`. Additionally, it does not have any `RETURN` statement like a regular trigger function.
+
 To turn off an event trigger, you use the `ALTER EVENT TRIGGER` statement:
 
 ```sql
@@ -4240,7 +4251,7 @@ ALTER EVENT TRIGGER event_trigger_name
 DISABLE;
 ```
 
-To enable an event trigger, you also use the `ALTER EVENT TRIGGER` statement but with the ENABLE option:
+To enable an event trigger, you also use the `ALTER EVENT TRIGGER` statement but with the `ENABLE` option:
 
 ```sql
 ALTER EVENT TRIGGER event_trigger_name
