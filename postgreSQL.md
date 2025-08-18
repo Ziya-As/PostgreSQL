@@ -4321,7 +4321,7 @@ The optional `frame_clause` can be one of
 { RANGE | ROWS | GROUPS } BETWEEN frame_start AND frame_end [ frame_exclusion ]
 ```
 
-- `ROWS`: This mode allows you to define the frame in terms of physical rows. When you specify ROWS, you're telling PostgreSQL to count the exact number of rows from the current row to determine the frame. This mode is ideal when you need a fixed number of rows for your calculation, such as when calculating moving averages or running totals that span a specific row count.
+- `ROWS`: This mode allows you to define the frame in terms of physical rows. When you specify `ROWS`, you're telling PostgreSQL to count the exact number of rows from the current row to determine the frame. This mode is ideal when you need a fixed number of rows for your calculation, such as when calculating moving averages or running totals that span a specific row count.
 - `RANGE`: Unlike `ROWS`, the `RANGE` mode focuses on the values of the ordering column(s) to define the frame. It groups rows that have the same values as the current row in the ordering column(s), effectively treating rows with identical values as a single entity in the calculation. `RANGE` is particularly useful for dealing with duplicate values in the dataset.
 
 The `frame_start` and `frame_end` can be one of:
@@ -4339,30 +4339,31 @@ Whenever we use a window function, it creates a 'window' or a 'partition' depend
 There are three kinds of window functions in PostgreSQL:
 
 - Ranking Window Functions
-  - `ROW_NUMBER`: Returns the number of the current row starting from 1.
-  - `RANK`: Returns the rank of the current row with gaps.
-  - `DENSE_RANK`: Returns the rank of the current row without gaps.
-  - `PERCENT_RANK`: Returns relative rank of each row in a set.
-  - `NTILE`: Divides rows within into into roughly equal-sized buckets and assigns a tile number to each row.
-  - `CUME_DIST`: Returns the cumulative distribution of a value in a set.
+  - `ROW_NUMBER`
+  - `RANK`
+  - `DENSE_RANK`
+  - `PERCENT_RANK`
+  - `NTILE`
+  - `CUME_DIST`
 - Value Window Functions
-  - `FIRST_VALUE`: Returns the value of the first row in each partition.
-  - `LAST_VALUE`: Returns the value of the last row in each partition.
-  - `LEAD`: Returns a value from a preceding row, helpful for backward-looking comparisons.
-  - `LAG`: Returns a value from a subsequent row, helpful for forward-looking comparisons.
-  - `NTH_VALUE`: Returns the value of the nth row within a window frame, helpful for accessing specific rows.
+  - `FIRST_VALUE`
+  - `LAST_VALUE`
+  - `LEAD`
+  - `LAG`
+  - `NTH_VALUE`
 - Aggregate Window Functions
 
 <hr>
 
 ### `ROW_NUMBER()`
 
-Here is the syntax for the `ROW_NUMBER` window function:
+`ROW_NUMBER` returns the number of the current row starting from 1. Here is the syntax for the `ROW_NUMBER` window function:
 
 ```sql
 ROW_NUMBER() OVER (
     [PARTITION BY expression_list]
     [ORDER BY expression_list]
+    [frame_clause]
 )
 ```
 
@@ -4385,16 +4386,17 @@ ORDER BY u.username, tx_rank;
 
 ### `RANK()`
 
-Here’s the syntax of the `RANK()` window function:
+`RANK` returns the rank of the current row with gaps. Here’s the syntax of the `RANK()` window function:
 
 ```sql
 RANK() OVER (
     [PARTITION BY partition_expresion]
     [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
-Both `PARTITION BY` and `ORDER BY` clauses are optional. If you omit these clauses, the `RANK()` function will treat all the rows as peers and assign them the same rank (1). Therefore, the `RANK()` function works properly only when you have at least the `ORDER BY` clause.
+If you omit the optional `PARTITION BY` and `ORDER BY` clauses, the `RANK()` function will treat all the rows as peers and assign them the same rank (1). Therefore, the `RANK()` function works properly only when you have at least the `ORDER BY` clause.
 
 Here is an example:
 
@@ -4416,12 +4418,13 @@ ORDER BY u.country, country_rank;
 
 ### `DENSE_RANK()`
 
-Here’s the syntax of the `DENSE_RANK()` function:
+`DENSE_RANK` returns the rank of the current row without gaps. Here’s the syntax of the `DENSE_RANK()` function:
 
 ```sql
 DENSE_RANK() OVER (
     [PARTITION BY expression_list]
     [ORDER BY expression_list]
+    [frame_clause]
 )
 ```
 
@@ -4445,12 +4448,13 @@ ORDER BY u.country, country_rank;
 
 ### `PERCENT_RANK()`
 
-Here’s the syntax of the `PERCENT_RANK()` function:
+`PERCENT_RANK` returns relative rank of each row in a set. Here’s the syntax of the `PERCENT_RANK()` function:
 
 ```sql
 PERCENT_RANK() OVER (
     [PARTITION BY expression_list]
     [ORDER BY expression_list]
+    [frame_clause]
 )
 ```
 
@@ -4474,12 +4478,13 @@ ORDER BY u.country, country_rank;
 
 ### `NTILE`
 
-Here’s the syntax for the `NTILE()` window function:
+`NTILE` divides rows within into roughly equal-sized buckets and assigns a tile number to each row. Here’s the syntax for the `NTILE()` window function:
 
 ```sql
 NTILE(num_tiles) OVER (
     [PARTITION BY partition_expression]
     [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
@@ -4495,7 +4500,7 @@ SELECT
   NTILE(3) OVER (
   	PARTITION BY u.country
     ORDER BY t.amount DESC
-  ) AS quartile
+  ) AS buckets
 FROM users u
 JOIN transactions t ON u.user_id = t.user_id;
 ```
@@ -4504,12 +4509,13 @@ JOIN transactions t ON u.user_id = t.user_id;
 
 ### `CUME_DIST`
 
-Here’s the syntax of the `CUME_DIST()` window function:
+`CUME_DIST` returns the cumulative distribution of a value in a set. Here’s the syntax of the `CUME_DIST()` window function:
 
 ```sql
 CUME_DIST() OVER (
   [PARTITION BY partition_expression]
   [ORDER BY sort_expression]
+  [frame_clause]
 )
 ```
 
@@ -4532,12 +4538,13 @@ JOIN transactions t ON u.user_id = t.user_id;
 
 ### `FIRST_VALUE`
 
-Here’s the basic syntax of the `FIRST_VALUE` window function:
+`FIRST_VALUE` returns the value of the first row in each partition. Here’s the basic syntax of the `FIRST_VALUE` window function:
 
 ```sql
 FIRST_VALUE (expression) OVER (
     [PARTITION BY partition_expression]
     [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
@@ -4560,7 +4567,7 @@ JOIN transactions t ON u.user_id = t.user_id;
 
 ### `LAST_VALUE`
 
-Here’s the basic syntax of the `LAST_VALUE` window function:
+`LAST_VALUE` returns the value of the last row in each partition. Here’s the basic syntax of the `LAST_VALUE` window function:
 
 ```sql
 LAST_VALUE (expression) OVER (
@@ -4590,13 +4597,14 @@ JOIN transactions t ON u.user_id = t.user_id;
 
 ### `LEAD()`
 
-Here’s the basic syntax of the `LEAD()` window function:
+The `LEAD()` function provides access to a row that follows the current row at a specified physical offset. Here’s the basic syntax of the `LEAD()` window function:
 
 ```sql
 LEAD(expression [,offset [,default]])
 OVER (
     [PARTITION BY partition_expression]
     [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
@@ -4622,12 +4630,14 @@ JOIN transactions t ON u.user_id = t.user_id;
 
 ### `LAG()`
 
-Here’s the syntax of the PostgreSQL `LAG` window function:
+The `LAG()` function allows to access data of the previous row from the current row. Here’s the syntax of the PostgreSQL `LAG` window function:
 
 ```sql
-LAG(value[, offset [, default]]) OVER (
+LAG(value[, offset [, default]])
+OVER (
     [PARTITION BY partition_expression]
     [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
@@ -4653,7 +4663,7 @@ JOIN transactions t ON u.user_id = t.user_id;
 
 ### `NTH_VALUE ()`
 
-Here’s the syntax of the `NTH_VALUE()` window function:
+`NTH_VALUE` returns the value of the nth row within a window frame, helpful for accessing specific rows. Here’s the syntax of the `NTH_VALUE()` window function:
 
 ```sql
 NTH_VALUE(value, n) OVER (
@@ -4676,7 +4686,7 @@ SELECT
 		PARTITION BY u.user_id
 		ORDER BY t.created_at
 		ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
-	) AS second_amount
+	) AS second_transaction_amount
 FROM transactions t
 JOIN users u ON u.user_id = t.user_id;
 ```
@@ -4693,6 +4703,7 @@ Here’s the syntax of the `MIN()` window function:
 MIN(value) OVER (
     [PARTITION BY partition_expression]
     [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
@@ -4722,6 +4733,7 @@ Here’s the syntax of the `MAX()` window function:
 MAX(value) OVER (
     [PARTITION BY partition_expression]
     [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
@@ -4751,6 +4763,7 @@ Here’s the syntax of the `AVG()` window function:
 AVG(value) OVER (
     [PARTITION BY partition_expression]
     [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
@@ -4777,8 +4790,9 @@ The `COUNT()` window function returns the number of rows within a partition. Her
 
 ```sql
 COUNT(value) OVER (
-   [PARTITION BY partition_expression]
-   [ORDER BY sort_expression]
+    [PARTITION BY partition_expression]
+    [ORDER BY sort_expression]
+    [frame_clause]
 )
 ```
 
@@ -4806,8 +4820,9 @@ Here’s the syntax of the `SUM()` window function:
 
 ```sql
 SUM(value) OVER (
-    PARTITION BY partition_expression,
-    ORDER BY order_expression
+    [PARTITION BY partition_expression]
+    [ORDER BY order_expression]
+    [frame_clause]
 )
 ```
 
