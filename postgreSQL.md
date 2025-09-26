@@ -210,14 +210,21 @@ To list the tables in PGAdmin tool, we can use the below command:
 SELECT tablename FROM pg_tables WHERE schemaname = 'public';
 ```
 
-To describe the actual table, we use the `\d table_name` command in psql.
+Another way to list all the tables is using this command:
+
+```sql
+SELECT table_name FROM INFORMATION_SCHEMA.TABLES
+WHERE table_schema LIKE '%public%';
+```
+
+To describe the actual table, we use the `\d <table_name>` command in psql.
 
 In PGAdmin tool, we can use the below command to get the details about a table:
 
 ```sql
 SELECT *
 FROM information_schema.COLUMNS
-WHERE TABLE_NAME = 'table_name';
+WHERE TABLE_NAME = '<table_name>';
 ```
 
 <hr>
