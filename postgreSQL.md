@@ -72,6 +72,7 @@
     - [`EXTRACT`](#extract)
     - [`AGE`](#age)
     - [`DATE_TRUNC`](#date_trunc)
+    - [`TO_CHAR`](#to_char)
     - [Concatenation](#concatenation)
   - [Subquery](#subquery)
     - [Subquery](#subquery-1)
@@ -496,18 +497,6 @@ If you want to set the current date as the default value, you can use the `CURRE
 CREATE TABLE table_name (
   column_name DATE DEFAULT CURRENT_DATE
 );
-```
-
-While retrieving the data with the `DATE` type, we can format it using the `to_char()` function.
-
-```sql
-SELECT
-  username,
-  to_char (signup_date, 'Month dd, yyyy') formatted_date
-FROM
-  users
-ORDER BY
-  signup_date;
 ```
 
 <hr>
@@ -2104,6 +2093,22 @@ SELECT DATE_TRUNC('month', TIMESTAMP '2025-10-23 16:20:30');
 SELECT DATE_TRUNC('day', TIMESTAMP '2025-10-23 16:20:30');
 SELECT DATE_TRUNC('hour', TIMESTAMP '2025-10-23 16:20:30');
 SELECT DATE_TRUNC('minute', TIMESTAMP '2025-10-23 16:20:30');
+```
+
+<hr>
+
+### `TO_CHAR`
+
+We can use the `TO_CHAR()` function to convert a timestamp or a numeric value to a string. Here is an example of using `TO_CHAR` while converting the `DATE` type to a desired string format:
+
+```sql
+SELECT
+  username,
+  to_char (signup_date, 'Month dd, yyyy') formatted_date
+FROM
+  users
+ORDER BY
+  signup_date;
 ```
 
 <hr>
