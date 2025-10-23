@@ -71,6 +71,7 @@
     - [`NOW`](#now)
     - [`EXTRACT`](#extract)
     - [`AGE`](#age)
+    - [`DATE_TRUNC`](#date_trunc)
     - [Concatenation](#concatenation)
   - [Subquery](#subquery)
     - [Subquery](#subquery-1)
@@ -2068,6 +2069,42 @@ SELECT AGE(NOW(), bought_at) in_inventory FROM products;
 ```
 
 It can also be used to find the age between a specific date and the current date. If only one date is passed, it compares that date with the current date to determine the age.
+
+<hr>
+
+### `DATE_TRUNC`
+
+The `DATE_TRUNC()` function truncates a `TIMESTAMP`, a `TIMESTAMP WITH TIME ZONE`, or an `INTERVAL` value to a specified precision. Here’s the basic syntax of the DATE_TRUNC function:
+
+```sql
+DATE_TRUNC(field, source [,time_zone])
+```
+
+`field` specifies the to which precision to truncate the source. Here are the valid values for the field:
+
+- `"millennium"`
+- `"century"`
+- `"decade"`
+- `"year"`
+- `"quarter"`
+- `"month"`
+- `"week"`
+- `"day"`
+- `"hour"`
+- `"minute"`
+- `"second"`
+- `"milliseconds"`
+- `"microseconds"`
+
+Here are some examples:
+
+```sql
+SELECT DATE_TRUNC('year', TIMESTAMP '2025-10-23 16:20:30');
+SELECT DATE_TRUNC('month', TIMESTAMP '2025-10-23 16:20:30');
+SELECT DATE_TRUNC('day', TIMESTAMP '2025-10-23 16:20:30');
+SELECT DATE_TRUNC('hour', TIMESTAMP '2025-10-23 16:20:30');
+SELECT DATE_TRUNC('minute', TIMESTAMP '2025-10-23 16:20:30');
+```
 
 <hr>
 
